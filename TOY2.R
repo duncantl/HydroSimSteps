@@ -43,8 +43,8 @@
 #######
 ####a. libraries
 ####b. set workspace
-rm(list=ls(all=TRUE)) #start with empty workspace
-setwd("C:/Users/leadams/Desktop/ShastaDam/DP")
+#rm(list=ls(all=TRUE)) #start with empty workspace
+#setwd("C:/Users/leadams/Desktop/ShastaDam/DP")
 getwd()
 ####c.global functions
 monthlist=vector()
@@ -108,9 +108,9 @@ nospillRdecs=nospillRcdecs+nospillRwdecs
 
 #joint probability of historical air temp and inflow
 #synthetically calculatead per month based on pdf. each record of 0.01 occurs with 0.01 joint prob/month for each month
-setwd("C:/Users/leadams/Desktop/ShastaDam/Input_data")
+#setwd("C:/Users/leadams/Desktop/ShastaDam/Input_data")
 climate=read.csv("climateinputs5probs.csv") #climate data generated with InflowCleaningv2 oct 19 2017
-setwd("C:/Users/leadams/Desktop/ShastaDam") #paper output goes to this file directory
+#setwd("C:/Users/leadams/Desktop/ShastaDam") #paper output goes to this file directory
 #print(xtable(climate,type="latex"), file="yeartypes.tex") 
 #probability of occurence
 probs=c(0.01,0.1, 0.5, 0.9, 0.99) #probs
@@ -148,12 +148,12 @@ Lookupy=Lookupyprep[,c(2,10,11,12)]
 #######ii. T|V
 ##########
 ####get raw temp and volume data
-setwd("C:/Users/leadams/Desktop/ShastaDam/SDP")
+#setwd("C:/Users/leadams/Desktop/ShastaDam/SDP")
 all=read.csv("TwopoolAlldatav4.csv") #full reservoir storage and temp dataset generated from file exploringinputdataeachvwvc 2 Sept
 #notes: all was created with 51F warm and cold pool stratification temperature
 abbreviated=read.csv("GroupidExpectedVwVcTcTw.csv") #cleaned and analyzed/aggregated dataset for analysis 6 Sept
 
-setwd("C:/Users/leadams/Desktop/ShastaDam/DP") #run analysis on VwVc to TcTw from this directory
+#setwd("C:/Users/leadams/Desktop/ShastaDam/DP") #run analysis on VwVc to TcTw from this directory
 groupingcorrelation=lm(all$Groupid~all$month) #checking to see if i can run the analysis by group id
 #good correlation OK to group Vc and Vw by groupid
 #Residual standard error: 22.91 on 217 degrees of freedom
@@ -253,13 +253,13 @@ LookupTable=LookupTableprep2
 #interpolate missing values either by carrying forward last observation or spline (polynomial interpolation)
 LookupTableprep2[,3]=ifelse(LookupTableprep2[,3]>0, LookupTableprep2[,3],NA)
 LookupTableprep2[,4]=ifelse(LookupTableprep2[,4]>0, LookupTableprep2[,4],NA)
-require(zoo)
+#require(zoo)
 #install.packages("zoo")
 #library(zoo)
 
 #the data was prepped to use this form of interpolation. all 0 are NA
 #such that the data is carried forward always
-LookupTableprep3=na.locf(LookupTableprep2) #last observation carried forward 
+LookupTableprep3 = zoo::na.locf(LookupTableprep2) #last observation carried forward 
 
 #if vol is 0 then no release with 0 temp 
 LookupTableprep3[,3]=ifelse(LookupTableprep3[,1]==0, 0, LookupTableprep3[,3])
