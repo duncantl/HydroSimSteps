@@ -308,8 +308,7 @@ choosesolve=Vectorize(choosesolveprep)
 ####b. accumulative obj function
 #######################
 accumulate=function(month,S,Vcstates,Vwstates,VcSpace,RcstarWinter,VwSpace,Rcspace,Rwspace,VSpace,Rspace,p){  #lookup f*t+1 
-  fs = matrix(0,nrow=length(Vstates),ncol=length(Rdecs))
-  fstarvalue = matrix(0,nrow=length(Vstates),ncol=length(Rdecs))
+  fs = fstarvalue = matrix(0,nrow=length(Vstates),ncol=length(Rdecs))
   for(j in 1:length(Rdecs)){ 
     for(i in 1:length(Vstates)){ 
       fs[i,j]=ifelse(choosesolve(month,VwSpace[i,j],VcSpace[i,j],Rcspace[i,j], Rwspace[i,j], Rspace[i,j],VSpace[i,j],RcstarWinter,K, DP,p)<0,-9999, #remove infeasibles
@@ -323,8 +322,8 @@ accumulate=function(month,S,Vcstates,Vwstates,VcSpace,RcstarWinter,VwSpace,Rcspa
 }
 
 firststageaccumulate=function(month, S, Vcstates,Vwstates,Vcinitial,RcstarWinter,Vwinitial,Rcdecs,Rwdecs,Rdecs, Vinitial,p){
-    fs=vector(length=length(Rdecs))
-    fstarvalue=vector(length=length(Rdecs))
+    fs= fstarvalue = vector(length=length(Rdecs))
+
     for(j in 1:length(Rdecs)){#calculates f*t+1 from next stage
     fs[j]=ifelse(choosesolve(month,Vwinitial,Vcinitial,Rcdecs[j], Rwdecs[j], Rdecs[j],Vinitial,RcstarWinter,K, DP,p)<0,-9999, #remove infeasibles
                 which(Vcstates==OutgoingVc(S,Vcinitial,RcstarWinter,Vwinitial,Rcdecs[j],Rwdecs[j],p) & #,Vcstates)[i,j] & 
