@@ -457,8 +457,8 @@ for(S in (NoofStages-1):2){
     p=ystates[i]
     currentB=matrix(choosesolve(month,VwSpace,VcSpace,Rcspace, Rwspace, Rspace,VSpace,RcstarWinter,K, DP,p),
                   nrow=length(Vstates),ncol=length(Rdecs))
-    fs=matrix(0,nrow=length(Vstates),ncol=length(Rdecs))
-    fstarvalue=matrix(0,nrow=length(Vstates),ncol=length(Rdecs))
+#!!!    fs=matrix(0,nrow=length(Vstates),ncol=length(Rdecs))
+#!!!    fstarvalue=matrix(0,nrow=length(Vstates),ncol=length(Rdecs))
   accumB=matrix(accumulate(month,S,Vcstates,Vwstates,VcSpace,RcstarWinter,VwSpace,Rcspace,Rwspace,VSpace,Rspace,p),
                     nrow=length(Vstates),ncol=length(Rdecs))
   intstage=pmin(currentB, accumB)
@@ -546,8 +546,8 @@ firststageholding=array(0, dim=c(1, #length(Vstates)==1
 
 for(i in 1:pn){
  p=ystates[i]
-fs=vector(length=length(Rdecs))
-fstarvalue=vector(length=length(Rdecs))
+#!!!  fs=vector(length=length(Rdecs))
+#!!!  fstarvalue=vector(length=length(Rdecs))
 currentfirstB=matrix(choosesolve(month,Vwinitial, Vcinitial,Rcdecs, Rwdecs, Rdecs, Vinitial,RcstarWinter,K, DP,p),nrow=length(1),ncol=length(Rdecs))
 accumfirstB=matrix(firststageaccumulate(month, S, Vcstates,Vwstates,Vcinitial,RcstarWinter,Vwinitial,Rcdecs,Rwdecs,Rdecs, Vinitial,p),
                    nrow=length(1), ncol=length(Rdecs))
