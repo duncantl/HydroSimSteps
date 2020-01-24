@@ -31,21 +31,21 @@ finalinflowprep=function(month,Q){ #converts from cfs to taf
                          Q*1.98*30))
   return(monthlyQ)
 }
-
+finalinflow=Vectorize(finalinflowprep)
 
 
 TaLookupprep=function(month,p){
   Ta=Lookupy[which(Lookupy[,1]==month & Lookupy[,2]==p),4] #the max is just in case there are multiples 
   return(Ta)
 }
-
+TaLookup=Vectorize(TaLookupprep)
 
 QLookupprep=function(month,p){ #this could be VC, Vc or Vcstates
   Qprep=Lookupy[which(Lookupy[,1]==month & Lookupy[,2]==p),3]
   Q=as.numeric(Qprep)
   return(Q)
 }    
-
+QLookup=Vectorize(QLookupprep)
 
 monthcounter=function(Stage){ #gives month per stage number
   monthlocation=ifelse(Stage%%12==0, 12, Stage - floor(Stage/12)*12)
@@ -80,6 +80,7 @@ WinterDeltaVcprep=function(month,p){
   #round((0.855*Qin+0.264*TcLookup(VC,VW)+(0.253*0.12)*Qin+0.887)/2, digits=-6) #check eq and units
   return(DeltaVc)
 }
+WinterDeltaVc=Vectorize(WinterDeltaVcprep)
 
 
 SpringDeltaVcprep=function(RcstarWinter,month, RC,p){
@@ -89,14 +90,14 @@ SpringDeltaVcprep=function(RcstarWinter,month, RC,p){
                              ,bin)
   return(AdjustedforRcWinter)
 }
-
+SpringDeltaVc=Vectorize(SpringDeltaVcprep)
 
 ColdDeltaprep=function(month, RcstarWinter,RC,p){ 
   DeltaVc=ifelse(lakeseasonbin(month)=="winter",WinterDeltaVc(month,p),
                  SpringDeltaVc(RcstarWinter,month,RC,p)) 
   return(DeltaVc)
 }
-
+ColdDelta=Vectorize(ColdDeltaprep)
 
 #####################
 ###including spill/transition states in model state and action spaces
@@ -149,7 +150,7 @@ ReleaseTempprep=function(VC,VW, RC, RW){
                   (Tw*RW+Tc*RC)/(RC+RW)))
   return(T)
 }
-
+ReleaseTemp=Vectorize(ReleaseTempprep)
 
 
 ClrCk=function(RT){
@@ -206,6 +207,8 @@ OutgoingVcprep=function(S,VC, RcstarWinter,VW,RC,RW,p){ #put month in quotations
   return(endperiodVc)
 }
 
+OutgoingVc=Vectorize(OutgoingVcprep)
+
 OutgoingVwprep=function(S,VW,RW,p){ #put month in quotations
   month=monthcounter(S)
   Vwnext=ifelse(lakeseasonbin(month)=="winter" || lakeseasonbin(month)=="earlyspring" ||lakeseasonbin(month)=="overturn",0,
@@ -214,7 +217,7 @@ OutgoingVwprep=function(S,VW,RW,p){ #put month in quotations
                        "ERROR"))
   return(Vwnext)
 }
-
+OutgoingVw=Vectorize(OutgoingVwprep)
 
 benefitprep=function(Vc,Vw,Rc,Rw,month){
   RT=ReleaseTemp(Vc,Vw,Rc,Rw)
@@ -231,6 +234,7 @@ benefitprep=function(Vc,Vw,Rc,Rw,month){
   return(x)
 }
 
+benefit=Vectorize(benefitprep)
 
 mixedsolveprep=function(VW,VC,RC, RW, R, V, month, RcstarWinter, K, DP,p){ #when lake is mixed #matrices
   deltaVC=#ifelse(month=="February" || month=="March", deltaVC-springcoeff[2]*RC, WinterDeltaVc(month,p))
@@ -244,6 +248,7 @@ mixedsolveprep=function(VW,VC,RC, RW, R, V, month, RcstarWinter, K, DP,p){ #when
                   )))
   return(x)
 }
+mixedsolve=Vectorize(mixedsolveprep)
 
 springsolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initial conditions are no warm 
   deltaVw=QLookup(month,p)
@@ -258,6 +263,8 @@ springsolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initial conditions 
   return(x)
 }
 
+springsolve=Vectorize(springsolveprep)
+
 summersolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initial conditions are no warm (i dont like this, want VW to organically come online)
   deltaVw=QLookup(month,p)
   AvailableVW=ifelse(VW+deltaVw<0, 0, VW+deltaVw)
@@ -268,6 +275,8 @@ summersolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initial conditions 
                    )))
   return(x)
 }
+
+summersolve=Vectorize(summersolveprep)
 
 fallsolveprep=function(VW,VC,RC,RW,K,DP,month,p){ #initial conditions are no warm (i dont like this, want VW to organically come online)
   deltaVc=QLookup(month,p)+VW-RW
@@ -281,6 +290,7 @@ fallsolveprep=function(VW,VC,RC,RW,K,DP,month,p){ #initial conditions are no war
   return(x)
 }
 
+fallsolve=Vectorize(fallsolveprep)
 
 choosesolveprep=function(month,VW,VC,RC, RW, R, V,RcstarWinter,K, DP,p){ #matrix
   x=ifelse(seasonbin(month)=="winter" || seasonbin(month)=="earlyspring", mixedsolve(VW,VC,RC, RW, R, V, month, RcstarWinter,K, DP,p),
@@ -292,6 +302,7 @@ choosesolveprep=function(month,VW,VC,RC, RW, R, V,RcstarWinter,K, DP,p){ #matrix
   return(x)
 } 
 
+choosesolve=Vectorize(choosesolveprep)
 
 ###############
 ####b. accumulative obj function

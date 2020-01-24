@@ -130,7 +130,7 @@ deltaTa=mround(deltaTa,0.1) #uses mround function from global functions in this 
 
 ######monthly inflow
 
-finalinflow=Vectorize(finalinflowprep)
+
 rawQ=climate[,6]
 Q=mround(finalinflow(climate[,2],rawQ), bin)
 
@@ -140,10 +140,10 @@ ystates=probs
 Lookupyprep=cbind(climate,Q,deltaTa)
 Lookupy=Lookupyprep[,c(2,10,11,12)]
 
-TaLookup=Vectorize(TaLookupprep)
 
 
-QLookup=Vectorize(QLookupprep)
+
+
 #########
 #######ii. T|V
 ##########
@@ -194,12 +194,8 @@ afconversion=810714 #AF
 springcoeff=NickelsSpringCoefficients*c(afconversion,1, afconversion,1) 
 wintercoeff=NickelsWinterCoefficients*c(afconversion,afconversion,1,afconversion) 
 
-WinterDeltaVc=Vectorize(WinterDeltaVcprep)
 
 
-SpringDeltaVc=Vectorize(SpringDeltaVcprep)
-
-ColdDelta=Vectorize(ColdDeltaprep)
 
 #####################
 ###including spill/transition states in model state and action spaces
@@ -273,7 +269,7 @@ LookupTable=LookupTableprep3[order(LookupTableprep3[,1],LookupTableprep3[,2],Loo
 greaterTc=LookupTable[LookupTable[,1]==max(Vc) & LookupTable[,2]==0,3]
 greaterTw=LookupTable[LookupTable[,1]==0 & LookupTable[,2]==max(Vw),4]
 ##########get T from R and V
-ReleaseTemp=Vectorize(ReleaseTempprep)
+
 
 ###plot RC and RW and TC and TW
  #plot(LookupVRT[,3],LookupVRT[,7],ylim=c(40,65)) #Rc v T
@@ -389,9 +385,7 @@ Rwstar=stagepolicy(Vstates,NoofStages)
 ####d. end of period storage |(R,V,y)
 ############
 
-OutgoingVc=Vectorize(OutgoingVcprep)
 
-OutgoingVw=Vectorize(OutgoingVwprep)
 
 ##############
 
@@ -401,21 +395,21 @@ OutgoingVw=Vectorize(OutgoingVwprep)
 ####a. direct benefit function
 ############
 
-benefit=Vectorize(benefitprep)
+
 
 ####each lake and climate season's benefits | end of month storage
 
-mixedsolve=Vectorize(mixedsolveprep)
 
-springsolve=Vectorize(springsolveprep)
 
-summersolve=Vectorize(summersolveprep)
 
-fallsolve=Vectorize(fallsolveprep)
+
+
+
+
 
 #objective function/calculate current benefits
 
-choosesolve=Vectorize(choosesolveprep)
+
 
 ###############
 ####b. accumulative obj function
