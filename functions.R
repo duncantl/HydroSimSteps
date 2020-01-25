@@ -145,22 +145,25 @@ ReleaseTemp = ReleaseTempprep=function(VC,VW, RC, RW){
 
 
 ClrCk=function(RT){
-  ifelse(2.67491 + 0.95678*RT <30,0,
-             2.67491 + 0.95678*RT)
+    ans =  2.67491 + 0.95678*RT
+    ans[ans < 30] = 0
+    ans
 }
 Balls=function(RT){
-  ifelse(11.26688 + 0.81206*RT<30,0,
-             11.26688 + 0.81206*RT)
+    ans = 11.26688 + 0.81206*RT
+    ans[ans < 30] = 0
+    ans
 }
 Jelly=function(RT){
-  ifelse(7.74007 + 0.88836*RT <30, 0,
-       7.74007 + 0.88836*RT)
+    ans = 7.74007 + 0.88836*RT
+    ans[ans < 30] = 0
+    ans
 }
 #Bend=ifelse(31.69574 + 0.41228*LookupVRT$ReleaseT <33, 0, #additional Bend influences?
  #     31.69574 + 0.41228*LookupVRT$ReleaseT)
 RBDD=function(RT){
-  ifelse(15.8956 + 0.7529*RT <30, 0,
-      15.8956 + 0.7529*RT)
+    ans = 15.8956 + 0.7529*RT
+    ans[ans < 30] =  0
 }
 
 
