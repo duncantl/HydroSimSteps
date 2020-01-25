@@ -109,7 +109,7 @@ nospillRdecs=nospillRcdecs+nospillRwdecs
 #joint probability of historical air temp and inflow
 #synthetically calculatead per month based on pdf. each record of 0.01 occurs with 0.01 joint prob/month for each month
 #setwd("C:/Users/leadams/Desktop/ShastaDam/Input_data")
-climate=read.csv("climateinputs5probs.csv") #climate data generated with InflowCleaningv2 oct 19 2017
+climate=read.csv("climateinputs5probs.csv", stringsAsFactors = FALSE) #climate data generated with InflowCleaningv2 oct 19 2017
 #setwd("C:/Users/leadams/Desktop/ShastaDam") #paper output goes to this file directory
 #print(xtable(climate,type="latex"), file="yeartypes.tex") 
 #probability of occurence
