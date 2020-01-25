@@ -155,6 +155,9 @@ ReleaseTemp = ReleaseTempprep=function(VC,VW, RC, RW){
           LookupTable[(LookupTable[,1]==max(Vc)) & (LookupTable[,2]==VW),4]
        else
           LookupTable[(LookupTable[,1]==VC) & (LookupTable[,2]==VW),4]
+
+  if(length(Tc) == 0|| length(Tw) == 0)
+      return(NA)
   
   if(Tc==0)
       Tw
