@@ -343,9 +343,7 @@ accumulate=function(month,S,Vcstates,Vwstates,VcSpace,RcstarWinter,VwSpace,Rcspa
                        which(Vcstates==OutgoingVc(S,VcSpace[i,j],RcstarWinter,VwSpace[i,j],Rcspace[i,j],Rwspace[i,j],p) & #,Vcstates)[i,j] & #this gives the location of Vcstates
                              Vwstates==OutgoingVw(S, VwSpace[i,j], Rwspace[i,j],p)) #match Vw and Vc in LookupV table #location of Vw states
 
-        fstarvalue[i,j] = if(is.na(fs[i,j]))
-                            -9999
-                          else if(fs[i,j] < 0)
+        fstarvalue[i,j] = if(is.na(fs[i,j]) | fs[i,j] < 0)
                             -9999 #remove infeasibles
                           else
                             fstar[fs[i,j],(S+1)] #get the fstar from t+1 with the matching Vw and Vc states
@@ -366,9 +364,7 @@ firststageaccumulate=function(month, S, Vcstates,Vwstates,Vcinitial,RcstarWinter
                          Vwstates==OutgoingVw(S, Vwinitial, Rwdecs[j],p))
                 
 
-        fstarvalue[j] = if(is.na(fs[j]))
-                           -9999
-                        else if(fs[j] < 0)
+        fstarvalue[j] = if(is.na(fs[j]) | fs[j] < 0)
                            -9999
                         else
                            fstar[fs[j],(S+1)] #get the fstar from t+1 with the matching Vw and Vc states
