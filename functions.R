@@ -141,18 +141,29 @@ MakingBins=function(ObservedLookupTable,observedVc,observedVw,Vc,Vw,L){
 
 
 ReleaseTemp = ReleaseTempprep=function(VC,VW, RC, RW){
- # Tc=LookupVRTprep[(LookupVRTprep[,1]==VC) & (LookupVRTprep[,2]==VW) & (LookupVRTprep[,3]==RC) & (LookupVRTprep[,4]==RW),5]
-#  Tw=LookupVRTprep[(LookupVRTprep[,1]==VC) & (LookupVRTprep[,2]==VW) & (LookupVRTprep[,3]==RC) & (LookupVRTprep[,4]==RW),6] 
-  Tc=ifelse(VC>max(Vc), greaterTc,
-            ifelse(VW>max(Vw), LookupTable[(LookupTable[,1]==VC) & (LookupTable[,2]==max(Vw)),3],
-            LookupTable[(LookupTable[,1]==VC) & (LookupTable[,2]==VW),3]))
-  Tw=ifelse(VW>max(Vw), greaterTw,
-            ifelse(VC>max(Vc), LookupTable[(LookupTable[,1]==max(Vc)) & (LookupTable[,2]==VW),4],
-            LookupTable[(LookupTable[,1]==VC) & (LookupTable[,2]==VW),4]))
-  ifelse(Tc==0, Tw,
-           ifelse(Tw==0, Tc,
-                  (Tw*RW+Tc*RC)/(RC+RW)))
+
+  Tc = if(VC > max(Vc))
+          greaterTc
+       else if( VW > max(Vw))
+          LookupTable[(LookupTable[,1]==VC) & (LookupTable[,2]==max(Vw)),3]
+       else
+          LookupTable[(LookupTable[,1]==VC) & (LookupTable[,2]==VW),3]
+
+  Tw = if(VW>max(Vw))
+          greaterTw
+       else if(VC>max(Vc))
+          LookupTable[(LookupTable[,1]==max(Vc)) & (LookupTable[,2]==VW),4]
+       else
+          LookupTable[(LookupTable[,1]==VC) & (LookupTable[,2]==VW),4]
+  
+  if(Tc==0)
+      Tw
+  else if(Tw==0)
+      Tc
+  else
+      (Tw*RW+Tc*RC)/(RC+RW)
 }
+
 #ReleaseTemp=Vectorize(ReleaseTempprep)
 
 
