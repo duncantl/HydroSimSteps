@@ -49,24 +49,32 @@ monthcounter=function(Stage){ #gives month per stage number
     monthlocation[w] = Stage[w] - floor(Stage[w]/12)*12
     month.name[monthlocation] #starts with january
 }
+
 #gets climate season based on month
-seasonbin=function(month){
-  ifelse(month== "December" || month== "January", "winter", 
-                ifelse(month== "February" || month== "March", "earlyspring", 
-                       ifelse(month== "April", "spring", 
-                              ifelse(month== "May" || month=="June" || month== "July", "summer", 
-                                     ifelse(month== "August" || month== "September" || month=="October", "latesummer",
-                                            ifelse(month== "November", "fall", 
-                                                   "ERROR"))))))
-}
+SeasonbinLookup = character()
+SeasonbinLookup[ c("December", "January")] = "winter"
+SeasonbinLookup[ c("February", "March")] = "earlyspring"
+SeasonbinLookup[ c("April")] = "spring"
+SeasonbinLookup[ c("May", "June", "July")] = "summer"
+SeasonbinLookup[ c("August", "September", "October")] = "latesummer"
+SeasonbinLookup[ c("November")] = "fall"
+
+seasonbin=
+function(month)
+  SeasonbinLookup[month]
+
+
 #determines if lake is stratified or not based on month
-lakeseasonbin=function(month){
-  ifelse(month== "December" || month== "January", "winter", 
-                    ifelse(month== "February" || month== "March", "earlyspring", 
-                           ifelse(month== "April" || month== "May" || month== "June" || month== "July" ||month== "August" || month== "September" || month=="October", "stratified",
-                                  ifelse(month== "November", "overturn", 
-                                         "ERROR"))))
-}
+LakeseasonbinLookup = character()
+LakeseasonbinLookup[ c("December", "January")] = "winter"
+LakeseasonbinLookup[ c("February", "March")] = "earlyspring"
+LakeseasonbinLookup[ c("April", "May", "June", "July", "August", "September", "October")] = "stratified"
+#LakeseasonbinLookup[ c()] = "latesummer"
+LakeseasonbinLookup[ c("November")] = "overturn"
+
+lakeseasonbin =
+function(month)
+  LakeseasonbinLookup[month]
 
 
 
