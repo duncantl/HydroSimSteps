@@ -207,23 +207,25 @@ stagepolicy=function(VSpace,NoofStages){
 
 OutgoingVcprep=function(S,VC, RcstarWinter,VW,RC,RW,p){ #put month in quotations, add O #all matrices
   month=monthcounter(S)
-  sb = lakeseasonbin(month)
-  ifelse(sb =="winter", VC+WinterDeltaVc(month,p)-RC,
-                     ifelse(sb == "earlyspring", VC+SpringDeltaVc(RcstarWinter,month, RC,p)-RC, 
-                            ifelse(sb == "stratified", VC-RC, 
-                                   ifelse(sb == "overturn", VC+QLookup(month,p)-RC+VW-RW,
-                                          "ERROR"))))
+  switch(lakeseasonbin(month),
+         winter = VC+WinterDeltaVc(month,p)-RC,
+         earlyspring = VC+SpringDeltaVc(RcstarWinter,month, RC,p)-RC, 
+         stratified = VC-RC, 
+         overturn = VC+QLookup(month,p)-RC+VW-RW,
+         NA)
 }
 
 OutgoingVc=Vectorize(OutgoingVcprep)
 
 OutgoingVwprep=function(S,VW,RW,p){ #put month in quotations
   month=monthcounter(S)
-  sb = lakeseasonbin(month)
-  ifelse(sb == "winter" || sb == "earlyspring" || sb == "overturn",0,
-                ifelse(sb == "stratified", VW+QLookup(month,p)-RW,#+E 
-                       #ifelse(lakeseasonbin(month)=="overturn", Vw-Rw, 
-                       "ERROR"))
+  val = lakeseasonbin(month)
+  if(val %in% c("winter", "earlyspring", "overturn"))
+     0
+  else if(val  == "stratified")
+     VW+QLookup(month,p)-RW
+  else
+     NA
 }
 OutgoingVw=Vectorize(OutgoingVwprep)
 
@@ -291,13 +293,15 @@ fallsolve = fallsolveprep=function(VW,VC,RC,RW,K,DP,month,p){ #initial condition
 # fallsolve=Vectorize(fallsolveprep)
 
 choosesolveprep=function(month,VW,VC,RC, RW, R, V,RcstarWinter,K, DP,p){ #matrix
-    sb = seasonbin(month)
-    ifelse(sb =="winter" || sb =="earlyspring", mixedsolve(VW,VC,RC, RW, R, V, month, RcstarWinter,K, DP,p),
-           ifelse( sb == "spring", springsolve(VW,VC,RC, RW, R, V,K, DP,month,p),
-                  ifelse(sb =="summer" || sb =="latesummer" , summersolve(VW,VC,RC, RW, R, V,K, DP,month,p),
-                         #ifelse(seasonbin(month)=="october", octobersolve(VW,VC,RC, RW, R, V,K, DP,month,p),
-                           ifelse(sb == "fall", fallsolve(VW,VC,RC, RW, K, DP,month,p),
-                                "ERROR"))))#)
+
+    switch(seasonbin(month),
+           winter = ,
+           earlyspring = mixedsolve(VW,VC,RC, RW, R, V, month, RcstarWinter,K, DP,p),
+           spring = springsolve(VW,VC,RC, RW, R, V,K, DP,month,p),
+           summer = ,
+           latesummer = summersolve(VW,VC,RC, RW, R, V,K, DP,month,p),
+           fall = fallsolve(VW,VC,RC, RW, K, DP,month,p),
+           "ERROR")
 } 
 
 choosesolve=Vectorize(choosesolveprep)
