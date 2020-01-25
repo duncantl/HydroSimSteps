@@ -275,9 +275,11 @@ mixedsolve = mixedsolveprep=function(VW,VC,RC, RW, R, V, month, RcstarWinter, K,
 springsolve = springsolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initial conditions are no warm 
   deltaVw=QLookup(month,p)
   AvailableVw = pmax(VW+deltaVw , 0)   #!!!  Vw rather than VW??
+  # Old version with bug:
+  #    AvailableVw = ifelse(VW+deltaVw < 0, 0, Vw + deltaVw)   #!!!  Vw rather than VW??
 
   ans = rep(-9999, length(VW))
-  w = !( VW <= 0 | (V + deltaVw - R < DP | V + deltaVw - R > K) | (VC < RC | VW + deltaVw < RW ) )
+  w = !( VW > 0 | (V + deltaVw - R < DP | V + deltaVw - R > K) | (VC < RC | VW + deltaVw < RW ) )
   ans[w] =  benefit(VC, AvailableVw, RC, RW, month)[w]
   ans
 }
