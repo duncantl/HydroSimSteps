@@ -95,9 +95,11 @@ SpringDeltaVc = SpringDeltaVcprep=function(RcstarWinter,month, RC,p){
 }
 #SpringDeltaVc=Vectorize(SpringDeltaVcprep)
 
-ColdDeltaprep=function(month, RcstarWinter,RC,p){ 
-  ifelse(lakeseasonbin(month)=="winter",WinterDeltaVc(month,p),
-                 SpringDeltaVc(RcstarWinter,month,RC,p)) 
+ColdDeltaprep=function(month, RcstarWinter,RC,p){
+    if(lakeseasonbin(month)=="winter")
+        WinterDeltaVc(month,p)
+    else
+        SpringDeltaVc(RcstarWinter,month,RC,p) 
 }
 ColdDelta=Vectorize(ColdDeltaprep)
 
@@ -268,13 +270,12 @@ springsolve = springsolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initi
 
 
 summersolve = summersolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initial conditions are no warm (i dont like this, want VW to organically come online)
-  deltaVw=QLookup(month,p)
-  tmp = VW + deltaVw
-  AvailableVW=ifelse(tmp < 0, 0, tmp)
+  deltaVw = QLookup(month,p)
+  AvailableVW= pmax(VW + deltaVw, 0)
 
   ans = rep(-9999, length(VW))
   w = !(  (V + deltaVw - R < DP | V + deltaVw- R > K) | (VC < RC) | (VW + deltaVw < RW))
-  ans[w] = benefit(VC,AvailableVW,RC,RW,month)[w]  #ifelse(Nmax< x, Nmax, x)
+  ans[w] = benefit(VC, AvailableVW, RC, RW, month)[w]  #ifelse(Nmax< x, Nmax, x)
   ans
 }
 
