@@ -44,8 +44,10 @@ QLookup = QLookupprep=function(month,p){ #this could be VC, Vc or Vcstates
 #QLookup=Vectorize(QLookupprep)
 
 monthcounter=function(Stage){ #gives month per stage number
-  monthlocation=ifelse(Stage%%12==0, 12, Stage - floor(Stage/12)*12)
-  month.name[monthlocation] #starts with january
+    monthlocation = rep(12, length(Stage))
+    w = Stage%%12 != 0
+    monthlocation[w] = Stage[w] - floor(Stage[w]/12)*12
+    month.name[monthlocation] #starts with january
 }
 #gets climate season based on month
 seasonbin=function(month){
