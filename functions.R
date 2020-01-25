@@ -247,15 +247,21 @@ OutgoingVw=Vectorize(OutgoingVwprep)
 
 benefit = benefitprep=function(Vc,Vw,Rc,Rw,month){
   RT=ReleaseTemp(Vc,Vw,Rc,Rw)
-  #xrow=LookupVRTx[which(LookupVRTx[,1]==Vc & LookupVRTx[,2]==Vw & LookupVRTx[,3]==Rc & LookupVRTx[,4]==Rw),]
   tempthreshold=fishtemp(month)
-  ifelse(RT==0, 0, #if release temp is 0
-                       #ifelse(xrow$RBDD<tempthreshold,distance[6], 
-                             # ifelse(xrow$Bend<tempthreshold,distance[6],
-                                     ifelse(Jelly(RT)<tempthreshold,distance[5],   
-                                            ifelse(Balls(RT)<tempthreshold, distance[4],
-                                                   ifelse(ClrCk(RT)<tempthreshold, distance[3],
-                                                          0))))#)#)
+
+  if(length(RT) == 0 || is.na(RT))
+      return(NA)
+  
+  if(RT==0)
+      0
+  else if(Jelly(RT) < tempthreshold)
+      distance[5]
+  else if(Balls(RT) < tempthreshold)
+      distance[4]
+  else if(ClrCk(RT) < tempthreshold)
+      distance[3]
+  else
+      0
 }
 
 #benefit=Vectorize(benefitprep)
