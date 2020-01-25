@@ -335,12 +335,20 @@ choosesolve=Vectorize(choosesolveprep)
 accumulate=function(month,S,Vcstates,Vwstates,VcSpace,RcstarWinter,VwSpace,Rcspace,Rwspace,VSpace,Rspace,p){  #lookup f*t+1 
   fs = fstarvalue = matrix(0,nrow=length(Vstates),ncol=length(Rdecs))
   for(j in 1:length(Rdecs)){ 
-    for(i in 1:length(Vstates)){ 
-      fs[i,j]=ifelse(choosesolve(month,VwSpace[i,j],VcSpace[i,j],Rcspace[i,j], Rwspace[i,j], Rspace[i,j],VSpace[i,j],RcstarWinter,K, DP,p)<0,-9999, #remove infeasibles
-                     which(Vcstates==OutgoingVc(S,VcSpace[i,j],RcstarWinter,VwSpace[i,j],Rcspace[i,j],Rwspace[i,j],p) & #,Vcstates)[i,j] & #this gives the location of Vcstates
-                             Vwstates==OutgoingVw(S, VwSpace[i,j], Rwspace[i,j],p))) #match Vw and Vc in LookupV table #location of Vw states
-      fstarvalue[i,j]=ifelse(is.na(fs[i,j]), -9999, ifelse(fs[i,j]<0, -9999, #remove infeasibles
-                                                           fstar[fs[i,j],(S+1)])) #get the fstar from t+1 with the matching Vw and Vc states
+      for(i in 1:length(Vstates)){
+          tmp = choosesolve(month,VwSpace[i,j],VcSpace[i,j],Rcspace[i,j], Rwspace[i,j], Rspace[i,j],VSpace[i,j],RcstarWinter,K, DP,p)
+          fs[i,j] = if(is.na(tmp) || tmp < 0)
+                       -9999 #remove infeasibles
+                    else
+                       which(Vcstates==OutgoingVc(S,VcSpace[i,j],RcstarWinter,VwSpace[i,j],Rcspace[i,j],Rwspace[i,j],p) & #,Vcstates)[i,j] & #this gives the location of Vcstates
+                             Vwstates==OutgoingVw(S, VwSpace[i,j], Rwspace[i,j],p)) #match Vw and Vc in LookupV table #location of Vw states
+
+        fstarvalue[i,j] = if(is.na(fs[i,j]))
+                            -9999
+                          else if(fs[i,j] < 0)
+                            -9999 #remove infeasibles
+                          else
+                            fstar[fs[i,j],(S+1)] #get the fstar from t+1 with the matching Vw and Vc states
     } 
   } 
   return(fstarvalue) #produces a matrix of fstartt+1 values to accumulate in the benefit function, looking backwards
@@ -350,15 +358,21 @@ firststageaccumulate=function(month, S, Vcstates,Vwstates,Vcinitial,RcstarWinter
     fs= fstarvalue = vector(length=length(Rdecs))
 
     for(j in 1:length(Rdecs)){#calculates f*t+1 from next stage
-    fs[j]=ifelse(choosesolve(month,Vwinitial,Vcinitial,Rcdecs[j], Rwdecs[j], Rdecs[j],Vinitial,RcstarWinter,K, DP,p)<0,-9999, #remove infeasibles
-                which(Vcstates==OutgoingVc(S,Vcinitial,RcstarWinter,Vwinitial,Rcdecs[j],Rwdecs[j],p) & #,Vcstates)[i,j] & 
-                        Vwstates==OutgoingVw(S, Vwinitial, Rwdecs[j],p))) 
-                #which(Vcstates==OutgoingVc(S,Vcinitial,RcstarWinter,Vwinitial,Rcdecs[j],Rwdecs[j],p) & #,Vcstates)[i,j] & 
-                 #        Vwstates==OutgoingVw(S, Vwinitial, Rwdecs[j],p))) #match Vw and Vc in LookupV table
- 
-# }
-    fstarvalue[j]=ifelse(is.na(fs[j]), -9999, ifelse(fs[j]<0, -9999, fstar[fs[j],(S+1)])) #get the fstar from t+1 with the matching Vw and Vc states
- #   print(test)
+        tmp = choosesolve(month,Vwinitial,Vcinitial,Rcdecs[j], Rwdecs[j], Rdecs[j],Vinitial,RcstarWinter,K, DP, p)
+        fs[j] = if(is.na(tmp) || tmp < 0)
+                   -9999 #remove infeasibles
+                else
+                   which(Vcstates == OutgoingVc(S,Vcinitial,RcstarWinter,Vwinitial,Rcdecs[j],Rwdecs[j],p) & #,Vcstates)[i,j] & 
+                         Vwstates==OutgoingVw(S, Vwinitial, Rwdecs[j],p))
+                
+
+        fstarvalue[j] = if(is.na(fs[j]))
+                           -9999
+                        else if(fs[j] < 0)
+                           -9999
+                        else
+                           fstar[fs[j],(S+1)] #get the fstar from t+1 with the matching Vw and Vc states
+
     }
   return(fstarvalue) #produces a matrix of fstartt+1 values to accumulate in the benefit function, looking backwards
 }
