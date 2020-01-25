@@ -315,11 +315,6 @@ distance=302-rivermiles #distance from Shasta
 #######
 ###fish temp reqs
 #########
-ConstantTempThreshold=56
-ReturningAdults=64
-EmbryoIncubation=55
-Emergents=68
-OutmigratingJuveniles=66
 
 
 #LookupVRTx=cbind(LookupVRT,ConstantTempx)

@@ -169,13 +169,22 @@ RBDD=function(RT){
 }
 
 
-fishtemp=function(month){
-  ifelse(month=="March"|| month=="April",ReturningAdults,
-              ifelse(month=="May" || month=="June" || month=="July", EmbryoIncubation,
-                     ifelse(month=="August", Emergents,
-                            OutmigratingJuveniles)
-              ))
-}
+ConstantTempThreshold=56
+ReturningAdults=64
+EmbryoIncubation=55
+Emergents=68
+OutmigratingJuveniles=66
+
+FishtempLookup = numeric()
+FishtempLookup[ c("January", "February", "September", "October", "November", "December")] = OutmigratingJuveniles 
+FishtempLookup[ c("March", "April") ] = ReturningAdults
+FishtempLookup[ c("May", "June", "July") ] = EmbryoIncubation
+FishtempLookup[ c("August") ] = Emergents
+
+fishtemp = function(month)
+  FishtempLookup[month]
+
+
 
 
 stagepolicy=function(VSpace,NoofStages){
