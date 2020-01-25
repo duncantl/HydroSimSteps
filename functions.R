@@ -33,12 +33,12 @@ function(month, Q)
 
 
 TaLookup = TaLookupprep=function(month,p){
-  Lookupy[which(Lookupy[,1]==month & Lookupy[,2]==p),4] #the max is just in case there are multiples 
+  Lookupy[[4]][ which(Lookupy[[1]] == month & Lookupy[[2]] == p) ] #the max is just in case there are multiples 
 }
 #TaLookup=Vectorize(TaLookupprep)
 
 QLookup = QLookupprep=function(month,p){ #this could be VC, Vc or Vcstates
-  Qprep=Lookupy[which(Lookupy[,1]==month & Lookupy[,2]==p),3]
+  Qprep=Lookupy[[3]][ which(Lookupy[[1]]==month & Lookupy[[2]]==p) ]
   as.numeric(Qprep)
 }    
 #QLookup=Vectorize(QLookupprep)
