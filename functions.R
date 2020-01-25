@@ -32,16 +32,16 @@ function(month, Q)
     MonthDays[ as.character(month) ] * 1.98 * Q
 
 
-TaLookupprep=function(month,p){
+TaLookup = TaLookupprep=function(month,p){
   Lookupy[which(Lookupy[,1]==month & Lookupy[,2]==p),4] #the max is just in case there are multiples 
 }
-TaLookup=Vectorize(TaLookupprep)
+#TaLookup=Vectorize(TaLookupprep)
 
-QLookupprep=function(month,p){ #this could be VC, Vc or Vcstates
+QLookup = QLookupprep=function(month,p){ #this could be VC, Vc or Vcstates
   Qprep=Lookupy[which(Lookupy[,1]==month & Lookupy[,2]==p),3]
   as.numeric(Qprep)
 }    
-QLookup=Vectorize(QLookupprep)
+#QLookup=Vectorize(QLookupprep)
 
 monthcounter=function(Stage){ #gives month per stage number
   monthlocation=ifelse(Stage%%12==0, 12, Stage - floor(Stage/12)*12)
@@ -68,22 +68,22 @@ lakeseasonbin=function(month){
 
 
 
-WinterDeltaVcprep=function(month,p){ 
+WinterDeltaVc = WinterDeltaVcprep=function(month,p){ 
   mround(wintercoeff[1]+wintercoeff[2]*as.numeric(TaLookup(month,p))+wintercoeff[3]*as.numeric(QLookup(month,p))+wintercoeff[4]*1.6, bin) 
   #round((0.855*Qin+0.264*TcLookup(VC,VW)+(0.253*0.12)*Qin+0.887)/2, digits=-6) #check eq and units
   
 }
-WinterDeltaVc=Vectorize(WinterDeltaVcprep)
+#WinterDeltaVc=Vectorize(WinterDeltaVcprep)
 
 
-SpringDeltaVcprep=function(RcstarWinter,month, RC,p){
+SpringDeltaVc = SpringDeltaVcprep=function(RcstarWinter,month, RC,p){
     tmp = springcoeff[1]+springcoeff[2]*RC+springcoeff[3]*as.numeric(TaLookup(month,p))+springcoeff[4]*as.numeric(QLookup(month,p))
     DeltaVc=ifelse(tmp < 0,0, tmp)
                  
   mround(DeltaVc#-1.5*10^6
                              ,bin)
 }
-SpringDeltaVc=Vectorize(SpringDeltaVcprep)
+#SpringDeltaVc=Vectorize(SpringDeltaVcprep)
 
 ColdDeltaprep=function(month, RcstarWinter,RC,p){ 
   ifelse(lakeseasonbin(month)=="winter",WinterDeltaVc(month,p),
@@ -128,7 +128,7 @@ MakingBins=function(ObservedLookupTable,observedVc,observedVw,Vc,Vw,L){
 }
 
 
-ReleaseTempprep=function(VC,VW, RC, RW){
+ReleaseTemp = ReleaseTempprep=function(VC,VW, RC, RW){
  # Tc=LookupVRTprep[(LookupVRTprep[,1]==VC) & (LookupVRTprep[,2]==VW) & (LookupVRTprep[,3]==RC) & (LookupVRTprep[,4]==RW),5]
 #  Tw=LookupVRTprep[(LookupVRTprep[,1]==VC) & (LookupVRTprep[,2]==VW) & (LookupVRTprep[,3]==RC) & (LookupVRTprep[,4]==RW),6] 
   Tc=ifelse(VC>max(Vc), greaterTc,
@@ -141,7 +141,7 @@ ReleaseTempprep=function(VC,VW, RC, RW){
            ifelse(Tw==0, Tc,
                   (Tw*RW+Tc*RC)/(RC+RW)))
 }
-ReleaseTemp=Vectorize(ReleaseTempprep)
+#ReleaseTemp=Vectorize(ReleaseTempprep)
 
 
 ClrCk=function(RT){
@@ -205,7 +205,7 @@ OutgoingVwprep=function(S,VW,RW,p){ #put month in quotations
 }
 OutgoingVw=Vectorize(OutgoingVwprep)
 
-benefitprep=function(Vc,Vw,Rc,Rw,month){
+benefit = benefitprep=function(Vc,Vw,Rc,Rw,month){
   RT=ReleaseTemp(Vc,Vw,Rc,Rw)
   #xrow=LookupVRTx[which(LookupVRTx[,1]==Vc & LookupVRTx[,2]==Vw & LookupVRTx[,3]==Rc & LookupVRTx[,4]==Rw),]
   tempthreshold=fishtemp(month)
@@ -218,9 +218,9 @@ benefitprep=function(Vc,Vw,Rc,Rw,month){
                                                           0))))#)#)
 }
 
-benefit=Vectorize(benefitprep)
+#benefit=Vectorize(benefitprep)
 
-mixedsolveprep=function(VW,VC,RC, RW, R, V, month, RcstarWinter, K, DP,p){ #when lake is mixed #matrices
+mixedsolve = mixedsolveprep=function(VW,VC,RC, RW, R, V, month, RcstarWinter, K, DP,p){ #when lake is mixed #matrices
   deltaVC=#ifelse(month=="February" || month=="March", deltaVC-springcoeff[2]*RC, WinterDeltaVc(month,p))
          ColdDelta(month, RcstarWinter,RC,p)
   AvailableVc=ifelse(VC+deltaVC<0,0,VC+deltaVC)
@@ -231,9 +231,9 @@ mixedsolveprep=function(VW,VC,RC, RW, R, V, month, RcstarWinter, K, DP,p){ #when
                          benefit(AvailableVc,VW,RC,RW,month) #ifelse(Nmax< x, Nmax, x)
                   )))
 }
-mixedsolve=Vectorize(mixedsolveprep)
+#mixedsolve=Vectorize(mixedsolveprep)
 
-springsolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initial conditions are no warm 
+springsolve = springsolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initial conditions are no warm 
   deltaVw=QLookup(month,p)
   AvailableVw=ifelse(VW+deltaVw  < 0, 0,   #!!!  Vw rather than VW??
                      #ifelse(Vw+deltaVw >max(VW), max(VW),
@@ -245,9 +245,9 @@ springsolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initial conditions 
            )))
 }
 
-springsolve=Vectorize(springsolveprep)
+#springsolve=Vectorize(springsolveprep)
 
-summersolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initial conditions are no warm (i dont like this, want VW to organically come online)
+summersolve = summersolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initial conditions are no warm (i dont like this, want VW to organically come online)
   deltaVw=QLookup(month,p)
   tmp = VW + deltaVw
   AvailableVW=ifelse(tmp < 0, 0, tmp)
@@ -258,9 +258,9 @@ summersolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initial conditions 
                    )))
 }
 
-summersolve=Vectorize(summersolveprep)
+#summersolve=Vectorize(summersolveprep)
 
-fallsolveprep=function(VW,VC,RC,RW,K,DP,month,p){ #initial conditions are no warm (i dont like this, want VW to organically come online)
+fallsolve = fallsolveprep=function(VW,VC,RC,RW,K,DP,month,p){ #initial conditions are no warm (i dont like this, want VW to organically come online)
     deltaVc=QLookup(month,p)+VW-RW
     tmp = VC+deltaVc
   AvailableVC=ifelse(tmp < 0, 0, tmp)
@@ -271,8 +271,7 @@ fallsolveprep=function(VW,VC,RC,RW,K,DP,month,p){ #initial conditions are no war
                   benefit(AvailableVC,VW,RC,RW,month)  #ifelse(Nmax< x, Nmax, x)
            )))
 }
-
-fallsolve=Vectorize(fallsolveprep)
+# fallsolve=Vectorize(fallsolveprep)
 
 choosesolveprep=function(month,VW,VC,RC, RW, R, V,RcstarWinter,K, DP,p){ #matrix
     sb = seasonbin(month)
