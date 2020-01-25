@@ -237,13 +237,12 @@ benefit = benefitprep=function(Vc,Vw,Rc,Rw,month){
 mixedsolve = mixedsolveprep=function(VW,VC,RC, RW, R, V, month, RcstarWinter, K, DP,p){ #when lake is mixed #matrices
   deltaVC=#ifelse(month=="February" || month=="March", deltaVC-springcoeff[2]*RC, WinterDeltaVc(month,p))
          ColdDelta(month, RcstarWinter,RC,p)
-  AvailableVc=ifelse(VC+deltaVC<0,0,VC+deltaVC)
-  ifelse(VW>0 || RW>0, -9999, #no warmpool
-           ifelse(VC +deltaVC < RC, -9999, #consv of mass (not enough VC) 
-                  ifelse(V + deltaVC- R < DP || 
-                           V + deltaVC - R > K, -9999, #infrastructure limitations
-                         benefit(AvailableVc,VW,RC,RW,month) #ifelse(Nmax< x, Nmax, x)
-                  )))
+  AvailableVc= pmax(VC+deltaVC, 0)
+
+  ans = rep(-9999, length(R)) # RC  
+  w = ! ( (VW>0 | RW>0) | (VC +deltaVC < RC) | (V + deltaVC- R < DP | V + deltaVC - R > K))
+  ans[w] = benefit(AvailableVc,VW,RC,RW,month)[w]
+  ans
 }
 #mixedsolve=Vectorize(mixedsolveprep)
 
@@ -252,8 +251,9 @@ springsolve = springsolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initi
   AvailableVw = pmax(VW+deltaVw , 0)   #!!!  Vw rather than VW??
 
   ans = rep(-9999, length(VW))
-  w = !( VW <= 0 | (V + deltaVw - R < DP | V + deltaVw - R > K) | (VC < RC | VW + deltaVw < RW, -9999) )
+  w = !( VW <= 0 | (V + deltaVw - R < DP | V + deltaVw - R > K) | (VC < RC | VW + deltaVw < RW ) )
   ans[w] =  benefit(VC, AvailableVw, RC, RW, month)[w]
+  ans
 }
 
 #springsolve=Vectorize(springsolveprep)
