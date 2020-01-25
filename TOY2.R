@@ -140,6 +140,19 @@ ystates=probs
 Lookupyprep=cbind(climate,Q,deltaTa)
 Lookupy=Lookupyprep[,c(2,10,11,12)]
 
+# Inline the literal columns of Lookupy into QLookup and TaLookup body's expression.
+# Assumes both functions have no {} around the body, but each body is just a single call.
+b = body(QLookup)
+b[[3]][[2]][[2]] = Lookupy[[1]]
+b[[3]][[3]][[2]] = Lookupy[[2]]
+b[[2]] = Lookupy[[3]]
+body(QLookup) = b
+
+b = body(TaLookup)
+b[[3]][[2]][[2]] = Lookupy[[1]]
+b[[3]][[3]][[2]] = Lookupy[[2]]
+b[[2]] = Lookupy[[4]]
+body(TaLookup) = b
 
 
 
