@@ -249,14 +249,11 @@ mixedsolve = mixedsolveprep=function(VW,VC,RC, RW, R, V, month, RcstarWinter, K,
 
 springsolve = springsolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initial conditions are no warm 
   deltaVw=QLookup(month,p)
-  AvailableVw=ifelse(VW+deltaVw  < 0, 0,   #!!!  Vw rather than VW??
-                     #ifelse(Vw+deltaVw >max(VW), max(VW),
-                            Vw+deltaVw)#)
-  ifelse(VW>0, -9999, #no warmpool at start, all warm comes from inflows
-    ifelse(V + deltaVw - R < DP | V + deltaVw - R > K, -9999, #inflow is warm, cold stays, #infrastructure limitations
-           ifelse(VC < RC | VW + deltaVw < RW, -9999, #consv of mass
-                  benefit(VC,AvailableVw,RC,RW,month)  #ifelse(Nmax< x, Nmax, x)
-           )))
+  AvailableVw = pmax(VW+deltaVw , 0)   #!!!  Vw rather than VW??
+
+  ans = rep(-9999, length(VW))
+  w = !( VW <= 0 | (V + deltaVw - R < DP | V + deltaVw - R > K) | (VC < RC | VW + deltaVw < RW, -9999) )
+  ans[w] =  benefit(VC, AvailableVw, RC, RW, month)[w]
 }
 
 #springsolve=Vectorize(springsolveprep)
