@@ -32,15 +32,14 @@ function(month, Q)
     MonthDays[ as.character(month) ] * 1.98 * Q
 
 
-TaLookup = TaLookupprep=function(month,p){
+TaLookup = TaLookupprep=function(month,p)
   Lookupy[[4]][ Lookupy[[1]] == month & Lookupy[[2]] == p ] #the max is just in case there are multiples 
-}
+
 #TaLookup=Vectorize(TaLookupprep)
 
-QLookup = QLookupprep=function(month,p){ #this could be VC, Vc or Vcstates
-  Qprep=Lookupy[[3]][ Lookupy[[1]]==month & Lookupy[[2]]==p ]
-  as.numeric(Qprep)
-}    
+QLookup = QLookupprep=function(month,p) #this could be VC, Vc or Vcstates
+  Lookupy[[3]][ Lookupy[[1]] == month & Lookupy[[2]] == p ]
+
 #QLookup=Vectorize(QLookupprep)
 
 monthcounter=function(Stage){ #gives month per stage number
