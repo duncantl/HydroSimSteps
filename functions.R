@@ -264,31 +264,29 @@ springsolve = springsolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initi
   ans
 }
 
-#springsolve=Vectorize(springsolveprep)
 
 summersolve = summersolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initial conditions are no warm (i dont like this, want VW to organically come online)
   deltaVw=QLookup(month,p)
   tmp = VW + deltaVw
   AvailableVW=ifelse(tmp < 0, 0, tmp)
-  ifelse(V + deltaVw - R < DP | V + deltaVw- R > K, -9999, #infrastructure limitations
-            ifelse(VC < RC, -9999, #consv mass
-                   ifelse(VW + deltaVw < RW, -9999,
-                          benefit(VC,AvailableVW,RC,RW,month)  #ifelse(Nmax< x, Nmax, x)
-                   )))
+
+  ans = rep(-9999, length(VW))
+  w = !(  (V + deltaVw - R < DP | V + deltaVw- R > K) | (VC < RC) | (VW + deltaVw < RW))
+  ans[w] = benefit(VC,AvailableVW,RC,RW,month)[w]  #ifelse(Nmax< x, Nmax, x)
+  ans
 }
 
-#summersolve=Vectorize(summersolveprep)
 
 fallsolve = fallsolveprep=function(VW,VC,RC,RW,K,DP,month,p){ #initial conditions are no warm (i dont like this, want VW to organically come online)
+
     deltaVc=QLookup(month,p)+VW-RW
     tmp = VC+deltaVc
-  AvailableVC=ifelse(tmp < 0, 0, tmp)
-  ifelse(#RW > 0, -9999, #all cold at the end
-         tmp - RC < DP || tmp - RC > K, -9999, #infrastructure limitations, no spill allowed
-    ifelse(tmp < RC, -9999, #all water becomes cold #|| VW < RW, -9999, #consv mass
-           ifelse(VW<RW,-9999,
-                  benefit(AvailableVC,VW,RC,RW,month)  #ifelse(Nmax< x, Nmax, x)
-           )))
+    AvailableVC = pmax(tmp, 0)
+
+    ans = rep(-9999, length(VC))
+    w = !( (tmp - RC < DP || tmp - RC > K) | (tmp < RC) | (VW < RW) )
+    ans[w] = benefit(AvailableVC,VW,RC,RW,month)[w]
+    ans
 }
 # fallsolve=Vectorize(fallsolveprep)
 
