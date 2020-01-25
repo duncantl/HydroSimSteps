@@ -88,9 +88,9 @@ WinterDeltaVc = WinterDeltaVcprep=function(month,p){
 
 SpringDeltaVc = SpringDeltaVcprep=function(RcstarWinter,month, RC,p){
     tmp = springcoeff[1]+springcoeff[2]*RC+springcoeff[3]*as.numeric(TaLookup(month,p))+springcoeff[4]*as.numeric(QLookup(month,p))
-    DeltaVc=ifelse(tmp < 0,0, tmp)
+    DeltaVc = pmax(tmp, 0)
                  
-  mround(DeltaVc#-1.5*10^6
+    mround(DeltaVc#-1.5*10^6
                              ,bin)
 }
 #SpringDeltaVc=Vectorize(SpringDeltaVcprep)
