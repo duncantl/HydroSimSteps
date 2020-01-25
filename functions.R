@@ -78,8 +78,9 @@ WinterDeltaVc=Vectorize(WinterDeltaVcprep)
 
 
 SpringDeltaVcprep=function(RcstarWinter,month, RC,p){
-  DeltaVc=ifelse((springcoeff[1]+springcoeff[2]*RC+springcoeff[3]*as.numeric(TaLookup(month,p))+springcoeff[4]*as.numeric(QLookup(month,p))) <0,0,
-                 (springcoeff[1]+springcoeff[2]*RC+springcoeff[3]*as.numeric(TaLookup(month,p))+springcoeff[4]*as.numeric(QLookup(month,p))))
+    tmp = springcoeff[1]+springcoeff[2]*RC+springcoeff[3]*as.numeric(TaLookup(month,p))+springcoeff[4]*as.numeric(QLookup(month,p))
+    DeltaVc=ifelse(tmp < 0,0, tmp)
+                 
   mround(DeltaVc#-1.5*10^6
                              ,bin)
 }
@@ -185,10 +186,11 @@ stagepolicy=function(VSpace,NoofStages){
 
 OutgoingVcprep=function(S,VC, RcstarWinter,VW,RC,RW,p){ #put month in quotations, add O #all matrices
   month=monthcounter(S)
-  ifelse(lakeseasonbin(month)=="winter", VC+WinterDeltaVc(month,p)-RC,
-                     ifelse(lakeseasonbin(month)=="earlyspring", VC+SpringDeltaVc(RcstarWinter,month, RC,p)-RC, 
-                            ifelse(lakeseasonbin(month)=="stratified", VC-RC, 
-                                   ifelse(lakeseasonbin(month)=="overturn", VC+QLookup(month,p)-RC+VW-RW,
+  sb = lakeseasonbin(month)
+  ifelse(sb =="winter", VC+WinterDeltaVc(month,p)-RC,
+                     ifelse(sb == "earlyspring", VC+SpringDeltaVc(RcstarWinter,month, RC,p)-RC, 
+                            ifelse(sb == "stratified", VC-RC, 
+                                   ifelse(sb == "overturn", VC+QLookup(month,p)-RC+VW-RW,
                                           "ERROR"))))
 }
 
@@ -196,8 +198,9 @@ OutgoingVc=Vectorize(OutgoingVcprep)
 
 OutgoingVwprep=function(S,VW,RW,p){ #put month in quotations
   month=monthcounter(S)
-  ifelse(lakeseasonbin(month)=="winter" || lakeseasonbin(month)=="earlyspring" ||lakeseasonbin(month)=="overturn",0,
-                ifelse(lakeseasonbin(month)=="stratified", VW+QLookup(month,p)-RW,#+E 
+  sb = lakeseasonbin(month)
+  ifelse(sb == "winter" || sb == "earlyspring" || sb == "overturn",0,
+                ifelse(sb == "stratified", VW+QLookup(month,p)-RW,#+E 
                        #ifelse(lakeseasonbin(month)=="overturn", Vw-Rw, 
                        "ERROR"))
 }
@@ -233,7 +236,7 @@ mixedsolve=Vectorize(mixedsolveprep)
 
 springsolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initial conditions are no warm 
   deltaVw=QLookup(month,p)
-  AvailableVw=ifelse(VW+deltaVw <0, 0,
+  AvailableVw=ifelse(VW+deltaVw  < 0, 0,   #!!!  Vw rather than VW??
                      #ifelse(Vw+deltaVw >max(VW), max(VW),
                             Vw+deltaVw)#)
   ifelse(VW>0, -9999, #no warmpool at start, all warm comes from inflows
@@ -247,7 +250,8 @@ springsolve=Vectorize(springsolveprep)
 
 summersolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initial conditions are no warm (i dont like this, want VW to organically come online)
   deltaVw=QLookup(month,p)
-  AvailableVW=ifelse(VW+deltaVw<0, 0, VW+deltaVw)
+  tmp = VW + deltaVw
+  AvailableVW=ifelse(tmp < 0, 0, tmp)
   ifelse(V + deltaVw - R < DP | V + deltaVw- R > K, -9999, #infrastructure limitations
             ifelse(VC < RC, -9999, #consv mass
                    ifelse(VW + deltaVw < RW, -9999,
@@ -258,11 +262,12 @@ summersolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initial conditions 
 summersolve=Vectorize(summersolveprep)
 
 fallsolveprep=function(VW,VC,RC,RW,K,DP,month,p){ #initial conditions are no warm (i dont like this, want VW to organically come online)
-  deltaVc=QLookup(month,p)+VW-RW
-  AvailableVC=ifelse(VC+deltaVc<0, 0, VC+deltaVc)
+    deltaVc=QLookup(month,p)+VW-RW
+    tmp = VC+deltaVc
+  AvailableVC=ifelse(tmp < 0, 0, tmp)
   ifelse(#RW > 0, -9999, #all cold at the end
-    VC + deltaVc - RC < DP || VC + deltaVc - RC > K, -9999, #infrastructure limitations, no spill allowed
-    ifelse(VC+deltaVc < RC, -9999, #all water becomes cold #|| VW < RW, -9999, #consv mass
+         tmp - RC < DP || tmp - RC > K, -9999, #infrastructure limitations, no spill allowed
+    ifelse(tmp < RC, -9999, #all water becomes cold #|| VW < RW, -9999, #consv mass
            ifelse(VW<RW,-9999,
                   benefit(AvailableVC,VW,RC,RW,month)  #ifelse(Nmax< x, Nmax, x)
            )))
@@ -271,11 +276,12 @@ fallsolveprep=function(VW,VC,RC,RW,K,DP,month,p){ #initial conditions are no war
 fallsolve=Vectorize(fallsolveprep)
 
 choosesolveprep=function(month,VW,VC,RC, RW, R, V,RcstarWinter,K, DP,p){ #matrix
-  ifelse(seasonbin(month)=="winter" || seasonbin(month)=="earlyspring", mixedsolve(VW,VC,RC, RW, R, V, month, RcstarWinter,K, DP,p),
-           ifelse(seasonbin(month)=="spring", springsolve(VW,VC,RC, RW, R, V,K, DP,month,p),
-                  ifelse(seasonbin(month)=="summer" || seasonbin(month)=="latesummer" , summersolve(VW,VC,RC, RW, R, V,K, DP,month,p),
+    sb = seasonbin(month)
+    ifelse(sb =="winter" || sb =="earlyspring", mixedsolve(VW,VC,RC, RW, R, V, month, RcstarWinter,K, DP,p),
+           ifelse( sb == "spring", springsolve(VW,VC,RC, RW, R, V,K, DP,month,p),
+                  ifelse(sb =="summer" || sb =="latesummer" , summersolve(VW,VC,RC, RW, R, V,K, DP,month,p),
                          #ifelse(seasonbin(month)=="october", octobersolve(VW,VC,RC, RW, R, V,K, DP,month,p),
-                           ifelse(seasonbin(month)=="fall", fallsolve(VW,VC,RC, RW, K, DP,month,p),
+                           ifelse(sb == "fall", fallsolve(VW,VC,RC, RW, K, DP,month,p),
                                 "ERROR"))))#)
 } 
 
