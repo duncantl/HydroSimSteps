@@ -516,8 +516,6 @@ for(S in (NoofStages-1):2){
   for (r in 1:length(Rdecs)){
       for (v in 1:length(Vstates)){
        if(!is.na(isaccum[v,r])) {
-          #Rcaccumstar[v,r] = Rwaccumstar[v,r] = NA
-#       } else {
           w = Vcstates == Vcoutdirect[v,r] & Vwstates == Vwoutdirect[v,r]
           Rcaccumstar[v,r] = Rcstar[w, S+1]
           Rwaccumstar[v,r] = Rwstar[w, S+1]
