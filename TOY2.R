@@ -668,26 +668,26 @@ for(S in 2:NoofStages){
   rangeVc = numeric(pn)
   for(i in 1:pn){
     p=ystates[i]
-    rangeVc[i]=OutgoingVcprep((S-1),as.numeric(Best[(S-1),1]), RcstarWinter, as.numeric(Best[(S-1),2]),as.numeric(Best[(S-1),3]), as.numeric(Best[(S-1),4]),p)
+    rangeVc[i]=OutgoingVcprep((S-1), Best[(S-1),1], RcstarWinter, Best[(S-1),2], Best[(S-1),3], Best[(S-1),4],p)
   }
   Best[S,1]=mround(sum(rangeVc)/pn,bin)
   ###for Vw
   rangeVw= numeric(pn)
   for(i in 1:pn){
     p=ystates[i]
-    rangeVw[i]=OutgoingVwprep((S-1),as.numeric(Best[(S-1),2]), as.numeric(Best[(S-1),4]),p)
+    rangeVw[i]=OutgoingVwprep((S-1), Best[(S-1),2], Best[(S-1),4], p)
   }
   Best[S,2]=mround(sum(rangeVw)/pn,bin)
   #month=monthcounter(S)
   #plocation=3 #p=0.5 is the third value
-  idx = which(Vcstates==as.numeric(Best[S,1]) & Vwstates==as.numeric(Best[S,2]))
+  idx = which(Vcstates== Best[S,1] & Vwstates == Best[S,2])
   Best[S,3]=Rcstar[idx, S]
   Best[S,4]=Rwstar[idx, S]
   month=monthcounter(S)
   rangex=numeric(pn)
   for(i in 1:pn){
     p=ystates[i]
-    idx = which(Vcstates==as.numeric(Best[S,1]) & Vwstates==as.numeric(Best[S,2]))
+    # idx = which(Vcstates== Best[S,1] & Vwstates == Best[S,2])
     rangex[i]=matrix(choosesolve(month,VwSpace,VcSpace,Rcspace, Rwspace, Rspace,VSpace,RcstarWinter,K, DP,p)
                        ,nrow=length(Vcstates),ncol=length(Rdecs))[idx, whichxstar[idx, S]]
 
