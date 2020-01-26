@@ -482,6 +482,9 @@ Rstar=Rcstar+Rwstar
 #####################
 ####b. intermediate stage
 #####################
+
+Rcaccumstar= Rwaccumstar = matrix(NA,nrow=length(Vstates),ncol=length(Rdecs))
+
 for(S in (NoofStages-1):2){
   month=monthcounter(S)
   for(i in 1:pn){
@@ -506,9 +509,9 @@ for(S in (NoofStages-1):2){
 
   #2. get Rc_t+1 for those combinations for which accB < direct B
       #rule out infeasible outs with directR
-  Rcaccumstar=matrix(0,nrow=length(Vstates),ncol=length(Rdecs))
-  Rwaccumstar=matrix(0,nrow=length(Vstates),ncol=length(Rdecs))
-  
+
+
+   Rcaccumstar[] = Rwaccumstar[] = NA
    #lookup Rc_t+1 for each x based on its start of period storage ==current period end of storage (Vc and Vw out), only for feasible R_t+1 options
   for (r in 1:length(Rdecs)){
     for (v in 1:length(Vstates)){
@@ -661,7 +664,7 @@ Best[1,]=c(Vcinitial, Vwinitial,Rcstarone,Rwstarone,xstarone,monthcounter(1))
 for(S in 2:NoofStages){
   ###for Vc 
   month=monthcounter(S-1)
-  rangeVc=vector()
+  rangeVc = vector()
   for(i in 1:pn){
     p=ystates[i]
     rangeVc[i]=OutgoingVcprep((S-1),as.numeric(Best[(S-1),1]), RcstarWinter, as.numeric(Best[(S-1),2]),as.numeric(Best[(S-1),3]), as.numeric(Best[(S-1),4]),p)
