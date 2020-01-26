@@ -512,16 +512,19 @@ for(S in (NoofStages-1):2){
 
 
    Rcaccumstar[] = Rwaccumstar[] = NA
-   #lookup Rc_t+1 for each x based on its start of period storage ==current period end of storage (Vc and Vw out), only for feasible R_t+1 options
-  for (r in 1:length(Rdecs)){
-      for (v in 1:length(Vstates)){
-       if(!is.na(isaccum[v,r])) {
-          w = Vcstates == Vcoutdirect[v,r] & Vwstates == Vwoutdirect[v,r]
-          Rcaccumstar[v,r] = Rcstar[w, S+1]
-          Rwaccumstar[v,r] = Rwstar[w, S+1]
-       }
-    }
-  }
+    #lookup Rc_t+1 for each x based on its start of period storage ==current period end of storage (Vc and Vw out), only for feasible R_t+1 options
+
+    idx = which(!is.na(isaccum), TRUE)
+    vc = Vcoutdirect[idx]
+    vw = Vwoutdirect[idx]
+
+    for(tmp1 in seq_len(nrow(idx))) {
+        tmp = idx[tmp1, , drop  = FALSE]
+        w = Vcstates == vc[tmp1] & Vwstates == vw[tmp1]
+        Rcaccumstar[tmp[1], tmp[2]] = Rcstar[w, S+1]
+        Rwaccumstar[tmp[1], tmp[2]] = Rwstar[w, S+1]        
+    }    
+    
   #colnames(Rcaccumstar)=Rcdecs
   #colnames(Rwaccumstar)=Rwdecs
   
