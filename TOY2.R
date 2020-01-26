@@ -140,20 +140,32 @@ ystates=probs
 Lookupyprep=cbind(climate,Q,deltaTa)
 Lookupy=Lookupyprep[,c(2,10,11,12)]
 
-# Inline the literal columns of Lookupy into QLookup and TaLookup body's expression.
+
+# Build the 2-way tables for column 3 and column 4 (Q and Ta)
+# where rows are indexed by month and columns indexed by p corresponding
+# to values in columns 1 and 2 respectively.
+tmp.m = as.character(unique(Lookupy$month))
+tmp.p = unique(Lookupy$p)
+LookupyQ = matrix(0, length(tmp.m), length(tmp.p), dimnames = list(tmp.m, as.character(tmp.p)))
+LookupyQ[ cbind(as.character(Lookupy$month), as.character(Lookupy$p)) ] = Lookupy$Q
+
+LookupyTa = matrix(0, length(tmp.m), length(tmp.p), dimnames = list(tmp.m, as.character(tmp.p)))
+LookupyTa[ cbind(as.character(Lookupy$month), as.character(Lookupy$p)) ] = Lookupy$deltaTa
+rm(tmp.m, tmp.p)
+
+# Inline the values of LookupyQ and LookupyTa into QLookup and TaLookup body's expression.
 # Assumes both functions have no {} around the body, but each body is just a single call.
-b = body(QLookup)
-b[[3]][[2]][[2]] = Lookupy[[1]]
-b[[3]][[3]][[2]] = Lookupy[[2]]
-b[[2]] = Lookupy[[3]]
-body(QLookup) = b
+    b = body(QLookup)
+    if(is.symbol(b[[2]])) {
+        b[[2]] = LookupyQ
+        body(QLookup) = b
+    }
 
-b = body(TaLookup)
-b[[3]][[2]][[2]] = Lookupy[[1]]
-b[[3]][[3]][[2]] = Lookupy[[2]]
-b[[2]] = Lookupy[[4]]
-body(TaLookup) = b
-
+    b = body(TaLookup)
+    if(is.symbol(b[[2]])) {
+        b[[2]] = LookupyTa
+        body(TaLookup) = b
+    }
 
 
 
@@ -224,7 +236,7 @@ MaxQcprep=max(ColdDelta("January",RcstarWinter, nospillRc, p),
 MaxQw=max(Lookupy[Lookupy[,1]=="April" | Lookupy[,1]=="May" | Lookupy[,1]=="June" | Lookupy[,1]=="July" | Lookupy[,1]=="August" | Lookupy[,1]=="September" | Lookupy[,1]=="October",3])
 
 ##need max Q included in lookup temp table 
-AvailVcprep=seq(0,MaxQcprep+max(Vc),bin)
+AvailVcprep=seq(0, MaxQcprep + max(Vc), bin)
 AvailVw=seq(0,MaxQw+max(Vw),bin) #vc and Vw includes inflow and atm conditions
 
 MaxQc=max(MaxQcprep,MaxQcprep+max(AvailVcprep)-max(AvailVw)) #fall overturn creates situations in which more than maxQ enters
