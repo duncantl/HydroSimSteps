@@ -332,8 +332,10 @@ choosesolveprep=function(month,VW,VC,RC, RW, R, V,RcstarWinter,K, DP,p){ #matrix
            fall = fallsolve(VW,VC,RC, RW, K, DP,month,p),
            "ERROR")
 } 
-
-choosesolve=Vectorize(choosesolveprep)
+#choosesolve=Vectorize(choosesolveprep)
+choosesolve=
+function(month, VW, VC, RC, RW, R, V, RcstarWinter, K, DP,p)
+   mapply(choosesolveprep, month, VW, VC, RC, RW, R, V, RcstarWinter, K, DP, p)
 
 ###############
 ####b. accumulative obj function
