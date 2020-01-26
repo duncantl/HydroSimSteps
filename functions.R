@@ -92,13 +92,18 @@ SpringDeltaVc = SpringDeltaVcprep=function(RcstarWinter,month, RC,p){
 }
 #SpringDeltaVc=Vectorize(SpringDeltaVcprep)
 
-ColdDeltaprep=function(month, RcstarWinter,RC,p){
+
+# Vectorized version.  month and p are always scalars.
+ColdDelta = ColdDeltaprep =
+function(month, RcstarWinter, RC, p)
+{ 
     if(lakeseasonbin(month)=="winter")
-        WinterDeltaVc(month,p)
+        rep(WinterDeltaVc(month, p), length(RC))
     else
-        SpringDeltaVc(RcstarWinter,month,RC,p) 
+        SpringDeltaVc(RcstarWinter, month, RC, p) 
 }
-ColdDelta=Vectorize(ColdDeltaprep)
+
+
 
 #####################
 ###including spill/transition states in model state and action spaces
