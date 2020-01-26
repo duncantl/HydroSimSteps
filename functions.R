@@ -220,29 +220,36 @@ stagepolicy=function(VSpace,NoofStages){
   return(holdingmatrix)
 }
 
-OutgoingVcprep=function(S,VC, RcstarWinter,VW,RC,RW,p){ #put month in quotations, add O #all matrices
-  month=monthcounter(S)
-  switch(lakeseasonbin(month),
-         winter = VC+WinterDeltaVc(month,p)-RC,
-         earlyspring = VC+SpringDeltaVc(RcstarWinter,month, RC,p)-RC, 
-         stratified = VC-RC, 
-         overturn = VC+QLookup(month,p)-RC+VW-RW,
-         NA)
+
+# Need the prep version as it is called directly in the TOY2.R script.
+OutgoingVc = OutgoingVcprep =
+function(S,VC, RcstarWinter,VW,RC,RW,p)
+{ 
+    month = monthcounter(S)
+    val = lakeseasonbin(month)
+    
+    switch(val,
+           "winter" = VC + WinterDeltaVc(month, p) - RC,
+           "earlyspring" = VC + SpringDeltaVc(RcstarWinter, month, RC, p) - RC, 
+           "stratified" = VC - RC, 
+           "overturn" = VC + QLookup(month, p) - RC + VW - RW,
+           { stop("problem in OutgoingVc"); rep(NA, length(RW))})
 }
 
-OutgoingVc=Vectorize(OutgoingVcprep)
-
-OutgoingVwprep=function(S,VW,RW,p){ #put month in quotations
-  month=monthcounter(S)
-  val = lakeseasonbin(month)
-  if(val %in% c("winter", "earlyspring", "overturn"))
-     0
-  else if(val  == "stratified")
-     VW+QLookup(month,p)-RW
-  else
-     NA
+OutgoingVw = OutgoingVwprep =
+function(S, VW, RW, p)
+{ 
+    month = monthcounter(S)
+    val = lakeseasonbin(month)
+    if(val %in% c("winter", "earlyspring", "overturn"))
+        rep(0, length(RW))
+    else if(val  == "stratified")
+        VW + QLookup(month, p) - RW
+    else {
+        warning("OutgoingVw returning NAs")
+        rep(NA, length(RW))
+    }
 }
-OutgoingVw=Vectorize(OutgoingVwprep)
 
 benefit = benefitprep=function(Vc,Vw,Rc,Rw,month){
   RT=ReleaseTemp(Vc,Vw,Rc,Rw)
