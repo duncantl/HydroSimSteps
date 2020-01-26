@@ -254,26 +254,32 @@ function(S, VW, RW, p)
     }
 }
 
-benefit = benefitprep=function(Vc,Vw,Rc,Rw,month){
-  RT=ReleaseTemp(Vc,Vw,Rc,Rw)
-  tempthreshold=fishtemp(month)
 
-  if(length(RT) == 0 || is.na(RT))
-      return(NA)
+# Vectorized.
+benefit =
+function(Vc,Vw,Rc,Rw,month)
+{
+  RT = ReleaseTemp(Vc, Vw, Rc, Rw)
+  tempthreshold = fishtemp(month)
+
+  ans = rep(0, length(Vc))
+  w.na = is.na(RT) | RT == 0
+  ans[w.na] = RT[w.na]
+  if(any(w.na <- !w.na)) {
+     idx = which(w.na)
+     w1 = Jelly(RT[idx]) < tempthreshold
+     ans[idx[w1]] = distance[5]
+     idx = idx[!w1]
+     w2 = Balls(RT[idx]) < tempthreshold
+     ans[idx[w2]] = distance[4]
+     idx = idx[!w2]
+     w3 = ClrCk(RT[idx]) < tempthreshold
+     ans[idx[w3]] = distance[3]
+  }
   
-  if(RT==0)
-      0
-  else if(Jelly(RT) < tempthreshold)
-      distance[5]
-  else if(Balls(RT) < tempthreshold)
-      distance[4]
-  else if(ClrCk(RT) < tempthreshold)
-      distance[3]
-  else
-      0
+  ans
 }
 
-#benefit=Vectorize(benefitprep)
 
 mixedsolve = mixedsolveprep=function(VW,VC,RC, RW, R, V, month, RcstarWinter, K, DP,p){ #when lake is mixed #matrices
   deltaVC=#ifelse(month=="February" || month=="March", deltaVC-springcoeff[2]*RC, WinterDeltaVc(month,p))
