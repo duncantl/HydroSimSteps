@@ -272,12 +272,12 @@ function(S,VC, RcstarWinter,VW,RC,RW,p)
     month = monthcounter(S)
     val = lakeseasonbin(month)
     
-    switch(val,
+as.numeric(switch(val,
            "winter" = VC + WinterDeltaVc(month, p) - RC,
            "earlyspring" = VC + SpringDeltaVc(RcstarWinter, month, RC, p) - RC, 
            "stratified" = VC - RC, 
            "overturn" = VC + QLookup(month, p) - RC + VW - RW,
-           { stop("problem in OutgoingVc"); rep(NA, length(RW))})
+           { stop("problem in OutgoingVc"); rep(NA, length(RW))}))
 }
 
 OutgoingVw = OutgoingVwprep =
@@ -288,7 +288,7 @@ function(S, VW, RW, p)
     if(val %in% c("winter", "earlyspring", "overturn"))
         rep(0, length(RW))
     else if(val  == "stratified")
-        VW + QLookup(month, p) - RW
+        as.numeric(VW + QLookup(month, p) - RW)
     else {
         warning("OutgoingVw returning NAs")
         rep(NA, length(RW))
@@ -338,7 +338,7 @@ springsolve = springsolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initi
   deltaVw=QLookup(month,p)
   AvailableVw = pmax(VW+deltaVw , 0)   #!!!  Vw rather than VW??
   # Old version with bug:
-  #    AvailableVw = ifelse(VW+deltaVw < 0, 0, Vw + deltaVw)   #!!!  Vw rather than VW??
+  #   AvailableVw = ifelse(VW+deltaVw < 0, 0, Vw + deltaVw)   #!!!  Vw rather than VW??
 
   ans = rep(-9999, length(VW))
   w = !( VW > 0 | (V + deltaVw - R < DP | V + deltaVw - R > K) | (VC < RC | VW + deltaVw < RW ) )
@@ -360,18 +360,18 @@ summersolve = summersolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initi
 
 fallsolve = fallsolveprep=function(VW,VC,RC,RW,K,DP,month,p){ #initial conditions are no warm (i dont like this, want VW to organically come online)
 
-    deltaVc=QLookup(month,p)+VW-RW
-    tmp = VC+deltaVc
+    deltaVc = QLookup(month,p)+VW-RW
+    tmp = VC + deltaVc
     AvailableVC = pmax(tmp, 0)
 
     ans = rep(-9999, length(VC))
-    w = !( (tmp - RC < DP || tmp - RC > K) | (tmp < RC) | (VW < RW) )
+    w = !( (tmp - RC < DP | tmp - RC > K) | (tmp < RC) | (VW < RW) )
     ans[w] = benefit(AvailableVC,VW,RC,RW,month)[w]
     ans
 }
 # fallsolve=Vectorize(fallsolveprep)
 
-choosesolveprep=function(month,VW,VC,RC, RW, R, V,RcstarWinter,K, DP,p){ #matrix
+choosesolveprep = function(month,VW,VC,RC, RW, R, V,RcstarWinter,K, DP,p){ #matrix
 
     switch(seasonbin(month),
            winter = ,
@@ -383,6 +383,7 @@ choosesolveprep=function(month,VW,VC,RC, RW, R, V,RcstarWinter,K, DP,p){ #matrix
            "ERROR")
 } 
 #choosesolve=Vectorize(choosesolveprep)
+
 choosesolve=
 function(month, VW, VC, RC, RW, R, V, RcstarWinter, K, DP,p)
    mapply(choosesolveprep, month, VW, VC, RC, RW, R, V, RcstarWinter, K, DP, p)
@@ -415,7 +416,7 @@ firststageaccumulate=function(month, S, Vcstates,Vwstates,Vcinitial,RcstarWinter
 
     for(j in 1:length(Rdecs)){#calculates f*t+1 from next stage
         tmp = choosesolve(month,Vwinitial,Vcinitial,Rcdecs[j], Rwdecs[j], Rdecs[j],Vinitial,RcstarWinter,K, DP, p)
-        fs[j] = if(is.na(tmp) || tmp < 0)
+        fs[j] = if(is.na(tmp) | tmp < 0)
                    -9999 #remove infeasibles
                 else
                    which(Vcstates == OutgoingVc(S,Vcinitial,RcstarWinter,Vwinitial,Rcdecs[j],Rwdecs[j],p) & #,Vcstates)[i,j] & 
