@@ -390,15 +390,14 @@ function(month, S, Vcstates,Vwstates,Vcinitial,RcstarWinter,Vwinitial,Rcdecs,Rwd
 {
     fstarvalue = rep(-9999, length(Rdecs))
 
-    tmp = choosesolve(month, Vwinitial, Vcinitial, Rcdecs, Rwdecs, Rdecs, Vinitial, RcstarWinter, K, DP, p)        
-    for(j in 1:length(Rdecs)){#calculates f*t+1 from next stage
-        if(!is.na(tmp[j]) & tmp[j] >= 0) {
-          idx = which(Vcstates == OutgoingVc(S,Vcinitial,RcstarWinter,Vwinitial,Rcdecs[j],Rwdecs[j],p) & 
-                        Vwstates==OutgoingVw(S, Vwinitial, Rwdecs[j],p))
+    tmp = choosesolve(month, Vwinitial, Vcinitial, Rcdecs, Rwdecs, Rdecs, Vinitial, RcstarWinter, K, DP, p)
 
-          fstarvalue[j] = fstar[idx,(S+1)] #get the fstar from t+1 with the matching Vw and Vc states
-       }
-    }
+    w = !is.na(tmp) & tmp > 0
+
+    s = S + 1
+    for(j in which(w))
+     fstarvalue[j] =  fstar[ which(Vcstates==OutgoingVc(S, Vcinitial, RcstarWinter, Vwinitial,Rcdecs[j],Rwdecs[j],p) & 
+                                 Vwstates==OutgoingVw(S, Vwinitial, Rwdecs[j],p) ) , s]
 
     fstarvalue #produces a matrix of fstartt+1 values to accumulate in the benefit function, looking backwards
 }
