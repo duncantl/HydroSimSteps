@@ -142,35 +142,6 @@ MakingBins=function(ObservedLookupTable,observedVc,observedVw,Vc,Vw,L){
 }
 
 
-ReleaseTempprep = function(VC,VW, RC, RW){
-
-  Tc = if(VC > max(Vc))
-          greaterTc
-       else if( VW > max(Vw))
-          LookupTable[(LookupTable[,1]==VC) & (LookupTable[,2]==max(Vw)),3]
-       else
-          LookupTable[(LookupTable[,1]==VC) & (LookupTable[,2]==VW),3]
-
-  Tw = if(VW>max(Vw))
-          greaterTw
-       else if(VC>max(Vc))
-          LookupTable[(LookupTable[,1]==max(Vc)) & (LookupTable[,2]==VW),4]
-       else
-          LookupTable[(LookupTable[,1]==VC) & (LookupTable[,2]==VW),4]
-
-  if(length(Tc) == 0 || length(Tw) == 0)
-      return(NA)
-  
-  if(Tc==0)
-      Tw
-  else if(Tw==0)
-      Tc
-  else
-      (Tw*RW+Tc*RC)/(RC+RW)
-}
-
-ReleaseTemp = Vectorize(ReleaseTempprep)
-
 ReleaseTemp =
   # Vectorized version using 2-D lookup table
   #  All arguments are vectors. 
