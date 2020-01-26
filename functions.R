@@ -142,7 +142,7 @@ MakingBins=function(ObservedLookupTable,observedVc,observedVw,Vc,Vw,L){
 }
 
 
-ReleaseTemp = ReleaseTempprep=function(VC,VW, RC, RW){
+ReleaseTempprep = function(VC,VW, RC, RW){
 
   Tc = if(VC > max(Vc))
           greaterTc
@@ -158,7 +158,7 @@ ReleaseTemp = ReleaseTempprep=function(VC,VW, RC, RW){
        else
           LookupTable[(LookupTable[,1]==VC) & (LookupTable[,2]==VW),4]
 
-  if(length(Tc) == 0|| length(Tw) == 0)
+  if(length(Tc) == 0 || length(Tw) == 0)
       return(NA)
   
   if(Tc==0)
@@ -169,8 +169,49 @@ ReleaseTemp = ReleaseTempprep=function(VC,VW, RC, RW){
       (Tw*RW+Tc*RC)/(RC+RW)
 }
 
-#ReleaseTemp=Vectorize(ReleaseTempprep)
+ReleaseTemp = Vectorize(ReleaseTempprep)
 
+ReleaseTemp =
+  # Vectorized version using 2-D lookup table
+  #  All arguments are vectors. 
+  # RC and RW can be longer than VC and VW which can be scalars.
+  # xx = unique(with(as.data.frame(argInfo$choosesolveNums), paste(month, VW, VC, RC, RW, R, V, RcstarWinter, K, DP, p, sep = ",")))
+  # VC & VW have same length.
+  # 
+function(VC, VW, RC, RW)
+{
+    Tc = rep(greaterTc, length(VC))
+    # VW is a scalar at least in some calls.
+    if(length(VW) == 1)
+        VW = rep(VW, length(VC))
+    
+    w = VC <= max(Vc)
+    if(any(w)) {
+        w2 = VW > max(Vw) # should we do this on VW[w] and do the subsetting differently.
+        w3 = w & w2
+        Tc[w3] = LookupTableTc[ cbind(as.character(VC[w3]), rep(as.character(max(Vw)), sum(w3))) ]
+        w3 = w & !w2
+        Tc[ w3 ] = LookupTableTc[ cbind(as.character(VC[w3]), as.character(VW[w3])) ]
+    }
+
+    Tw = rep(greaterTw, length(VW))
+    w = VW <= max(Vw)
+    if(any(w)) {
+        w2 = VC > max(Vc)
+        w3 = w & w2
+        Tw[w3] = LookupTableTw[ cbind(rep(as.character(max(Vc)), sum(w3)), as.character(VW[w3])) ]
+        w3 = w & !w2
+        Tw[ w3 ] = LookupTableTw[ cbind(as.character(VC[w3]), as.character(VW[w3])) ]
+    }    
+
+    
+    ans = Tc
+    w = !is.na(Tc) & (Tc == 0)
+    ans[w] = Tw[w]
+    w = !w & Tw != 0
+    ans[w] = (Tw[w] * RW[w] + Tc[w] * RC[w])/(RC[w] + RW[w])
+    ans   
+}
 
 ClrCk=function(RT){
     ans =  2.67491 + 0.95678*RT

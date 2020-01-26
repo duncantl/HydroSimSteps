@@ -271,6 +271,7 @@ LookupTableprep2[,3]=ifelse(LookupTableprep2[,3]==0,NA,LookupTableprep2[,3])
 LookupTableprep2[,4]=ifelse(LookupTableprep2[,4]==0,NA,LookupTableprep2[,4])
 LookupTable=LookupTableprep2
 
+
 #either have all possible Vc and Vw functions in the lookup table or have a function that assumes
 #anything above K etc as equivalent to a full Vc /Vw
 
@@ -290,6 +291,16 @@ LookupTableprep3 = zoo::na.locf(LookupTableprep2) #last observation carried forw
 LookupTableprep3[,3]=ifelse(LookupTableprep3[,1]==0, 0, LookupTableprep3[,3])
 LookupTableprep3[,4]=ifelse(LookupTableprep3[,2]==0, 0, LookupTableprep3[,4])
 LookupTable=LookupTableprep3[order(LookupTableprep3[,1],LookupTableprep3[,2],LookupTableprep3[,3],LookupTableprep3[,4]),]
+
+
+
+tmp.Vc = unique(LookupTable$Vc)
+tmp.Vw = unique(LookupTable$Vc)
+LookupTableTc = LookupTableTw = matrix(NA, length(tmp.Vc), length(tmp.Vw), dimnames = list(tmp.Vc, tmp.Vw))
+
+LookupTableTc[cbind(as.character(LookupTable$Vc), as.character(LookupTable$Vw))] = LookupTable$Tc
+LookupTableTw[cbind(as.character(LookupTable$Vc), as.character(LookupTable$Vw))] = LookupTable$Tw
+
 
 greaterTc=LookupTable[LookupTable[,1]==max(Vc) & LookupTable[,2]==0,3]
 greaterTw=LookupTable[LookupTable[,1]==0 & LookupTable[,2]==max(Vw),4]
@@ -673,7 +684,7 @@ for(S in 2:NoofStages){
     p=ystates[i]
     rangex[i]=matrix(choosesolve(month,VwSpace,VcSpace,Rcspace, Rwspace, Rspace,VSpace,RcstarWinter,K, DP,p)
                      ,nrow=length(Vcstates),ncol=length(Rdecs))[which(Vcstates==as.numeric(Best[S,1]) & Vwstates==as.numeric(Best[S,2])),whichxstar[which(Vcstates==as.numeric(Best[S,1]) & Vwstates==as.numeric(Best[S,2])),S]]
-    
+
     print(rangex[i])
   }
   Best[S,5]=sum(rangex)/pn
