@@ -179,7 +179,7 @@ function(VC, VW, RC, RW)
     ans = Tc
     w = !is.na(Tc) & (Tc == 0)
     ans[w] = Tw[w]
-    w = !w & Tw != 0
+    w = !w & !is.na(Tw) & Tw != 0 # Don't need the !is.na(Tw) here in our original solution.
     ans[w] = (Tw[w] * RW[w] + Tc[w] * RC[w])/(RC[w] + RW[w])
     ans   
 }
@@ -298,9 +298,10 @@ mixedsolve = mixedsolveprep=function(VW,VC,RC, RW, R, V, month, RcstarWinter, K,
          ColdDelta(month, RcstarWinter,RC,p)
   AvailableVc= pmax(VC+deltaVC, 0)
 
-  ans = rep(-9999, length(R)) # RC  
-  w = ! ( (VW>0 | RW>0) | (VC +deltaVC < RC) | (V + deltaVC- R < DP | V + deltaVC - R > K))
-  ans[w] = benefit(AvailableVc,VW,RC,RW,month)[w]
+  # R = as.numeric(R)
+  ans = rep(-9999, length(RC)) # RC  
+  w = ! ( (VW>0 | as.numeric(RW) > 0) | (VC +deltaVC < as.numeric(RC)) | (V + deltaVC - R < DP | V + deltaVC - R > K))
+  ans[w] = benefit(AvailableVc, VW, RC, RW, month)[w]
   ans
 }
 #mixedsolve=Vectorize(mixedsolveprep)
@@ -355,9 +356,11 @@ choosesolveprep = function(month,VW,VC,RC, RW, R, V,RcstarWinter,K, DP,p){ #matr
 } 
 #choosesolve=Vectorize(choosesolveprep)
 
-choosesolve=
-function(month, VW, VC, RC, RW, R, V, RcstarWinter, K, DP,p)
-   mapply(choosesolveprep, month, VW, VC, RC, RW, R, V, RcstarWinter, K, DP, p)
+#choosesolve=
+#function(month, VW, VC, RC, RW, R, V, RcstarWinter, K, DP,p)
+#   mapply(choosesolveprep, month, VW, VC, RC, RW, R, V, RcstarWinter, K, DP, p)
+
+choosesolve = choosesolveprep
 
 ###############
 ####b. accumulative obj function
@@ -382,25 +385,22 @@ accumulate=function(month,S,Vcstates,Vwstates,VcSpace,RcstarWinter,VwSpace,Rcspa
   return(fstarvalue) #produces a matrix of fstartt+1 values to accumulate in the benefit function, looking backwards
 }
 
-firststageaccumulate=function(month, S, Vcstates,Vwstates,Vcinitial,RcstarWinter,Vwinitial,Rcdecs,Rwdecs,Rdecs, Vinitial,p){
-    fs= fstarvalue = vector(length=length(Rdecs))
+firststageaccumulate =
+function(month, S, Vcstates,Vwstates,Vcinitial,RcstarWinter,Vwinitial,Rcdecs,Rwdecs,Rdecs, Vinitial,p)
+{
+    fstarvalue = rep(-9999, length(Rdecs))
 
+    tmp = choosesolve(month, Vwinitial, Vcinitial, Rcdecs, Rwdecs, Rdecs, Vinitial, RcstarWinter, K, DP, p)        
     for(j in 1:length(Rdecs)){#calculates f*t+1 from next stage
-        tmp = choosesolve(month,Vwinitial,Vcinitial,Rcdecs[j], Rwdecs[j], Rdecs[j],Vinitial,RcstarWinter,K, DP, p)
-        fs[j] = if(is.na(tmp) | tmp < 0)
-                   -9999 #remove infeasibles
-                else
-                   which(Vcstates == OutgoingVc(S,Vcinitial,RcstarWinter,Vwinitial,Rcdecs[j],Rwdecs[j],p) & #,Vcstates)[i,j] & 
-                         Vwstates==OutgoingVw(S, Vwinitial, Rwdecs[j],p))
-                
+        if(!is.na(tmp[j]) & tmp[j] >= 0) {
+          idx = which(Vcstates == OutgoingVc(S,Vcinitial,RcstarWinter,Vwinitial,Rcdecs[j],Rwdecs[j],p) & 
+                        Vwstates==OutgoingVw(S, Vwinitial, Rwdecs[j],p))
 
-        fstarvalue[j] = if(is.na(fs[j]) | fs[j] < 0)
-                           -9999
-                        else
-                           fstar[fs[j],(S+1)] #get the fstar from t+1 with the matching Vw and Vc states
-
+          fstarvalue[j] = fstar[idx,(S+1)] #get the fstar from t+1 with the matching Vw and Vc states
+       }
     }
-  return(fstarvalue) #produces a matrix of fstartt+1 values to accumulate in the benefit function, looking backwards
+
+    fstarvalue #produces a matrix of fstartt+1 values to accumulate in the benefit function, looking backwards
 }
 
 
