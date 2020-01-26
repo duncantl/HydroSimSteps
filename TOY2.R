@@ -658,9 +658,10 @@ xstarone=matrix(choosesolve(month,Vwinitial, Vcinitial,finalRcfirst, finalRwfirs
 
 #6. results
 ####a. best policy
-Best=matrix(0,nrow=NoofStages,ncol=6)
-colnames(Best)=c("Vc","Vw","Rc","Rw","x","month")
-Best[1,]=c(Vcinitial, Vwinitial,Rcstarone,Rwstarone,xstarone,monthcounter(1))
+Best=matrix(0,nrow=NoofStages,ncol = 5)
+colnames(Best)=c("Vc","Vw","Rc","Rw","x") # ,"month")
+rownames(Best) = monthcounter(1:NoofStages)
+Best[1,]=c(Vcinitial, Vwinitial,Rcstarone,Rwstarone,xstarone) # ,monthcounter(1))
 for(S in 2:NoofStages){
   ###for Vc 
   month=monthcounter(S-1)
@@ -693,7 +694,7 @@ for(S in 2:NoofStages){
     print(rangex[i])
   }
   Best[S,5]=sum(rangex)/pn
-  Best[S,6]=monthcounter(S)
+  # Best[S,6]=monthcounter(S)
   print(S)
 }
 print(Best)
