@@ -49,10 +49,7 @@ if(!exists("UseInline"))
 #setwd("C:/Users/leadams/Desktop/ShastaDam/DP")
 getwd()
 ####c.global functions
-monthlist=vector()
-for(i in 1:12){ #gets month
-  monthlist[i]=month.name[i]
-}
+monthlist = month.name
 #######
 ##exogenous information
 #######
