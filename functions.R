@@ -388,16 +388,16 @@ accumulate=function(month,S,Vcstates,Vwstates,VcSpace,RcstarWinter,VwSpace,Rcspa
 firststageaccumulate =
 function(month, S, Vcstates,Vwstates,Vcinitial,RcstarWinter,Vwinitial,Rcdecs,Rwdecs,Rdecs, Vinitial,p)
 {
-    fstarvalue = rep(-9999, length(Rdecs))
-
     tmp = choosesolve(month, Vwinitial, Vcinitial, Rcdecs, Rwdecs, Rdecs, Vinitial, RcstarWinter, K, DP, p)
 
     w = !is.na(tmp) & tmp > 0
 
-    s = S + 1
-    for(j in which(w))
-     fstarvalue[j] =  fstar[ which(Vcstates==OutgoingVc(S, Vcinitial, RcstarWinter, Vwinitial,Rcdecs[j],Rwdecs[j],p) & 
-                                 Vwstates==OutgoingVw(S, Vwinitial, Rwdecs[j],p) ) , s]
+    vc = OutgoingVc(S, Vcinitial, RcstarWinter, Vwinitial,Rcdecs[w], Rwdecs[w],p)
+    vw = OutgoingVw(S, Vwinitial, Rwdecs[w],p)
+           # use of mapply will confuse us in the profiling of Vectorize functions, but they are essentially gone.
+    vals = mapply(function(vc, vw) which(Vcstates == vc & Vwstates == vw), vc, vw)
+    fstarvalue = rep(-9999, length(Rdecs))
+    fstarvalue[w] = fstar[vals, S + 1]
 
     fstarvalue #produces a matrix of fstartt+1 values to accumulate in the benefit function, looking backwards
 }
