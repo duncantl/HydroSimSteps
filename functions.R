@@ -47,6 +47,8 @@ monthcounter=function(Stage){ #gives month per stage number
     month.name[monthlocation] #starts with january
 }
 
+body(monthcounter)[[5]][[2]] = month.name
+
 #gets climate season based on month
 SeasonbinLookup = character()
 SeasonbinLookup[ c("December", "January")] = "winter"
@@ -60,6 +62,7 @@ seasonbin=
 function(month)
   SeasonbinLookup[month]
 
+body(seasonbin)[[2]] = SeasonbinLookup
 
 #determines if lake is stratified or not based on month
 LakeseasonbinLookup = character()
@@ -73,17 +76,18 @@ lakeseasonbin =
 function(month)
   LakeseasonbinLookup[month]
 
+body(lakeseasonbin)[[2]] = LakeseasonbinLookup
 
-
-WinterDeltaVc = WinterDeltaVcprep=function(month,p){ 
+WinterDeltaVc = WinterDeltaVcprep =
+function(month,p) 
   mround(wintercoeff[1]+wintercoeff[2]*as.numeric(TaLookup(month,p))+wintercoeff[3]*as.numeric(QLookup(month,p))+wintercoeff[4]*1.6, bin) 
-  #round((0.855*Qin+0.264*TcLookup(VC,VW)+(0.253*0.12)*Qin+0.887)/2, digits=-6) #check eq and units
-  
-}
+
+
 #WinterDeltaVc=Vectorize(WinterDeltaVcprep)
 
 
-SpringDeltaVc = SpringDeltaVcprep=function(RcstarWinter,month, RC,p){
+SpringDeltaVc = SpringDeltaVcprep =
+function(RcstarWinter,month, RC,p){
     tmp = springcoeff[1]+springcoeff[2]*RC+springcoeff[3]*as.numeric(TaLookup(month,p))+springcoeff[4]*as.numeric(QLookup(month,p))
     DeltaVc = pmax(tmp, 0)
                  
@@ -222,7 +226,7 @@ FishtempLookup[ c("August") ] = Emergents
 fishtemp = function(month)
   FishtempLookup[month]
 
-
+body(fishtemp)[[2]] = FishtempLookup
 
 
 stagepolicy=function(VSpace,NoofStages){
