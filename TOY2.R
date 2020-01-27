@@ -1,3 +1,5 @@
+if(!exists("UseInline"))
+  UseInline = TRUE
 
 ###########
 ###table of contents
@@ -153,6 +155,8 @@ LookupyTa = matrix(0, length(tmp.m), length(tmp.p), dimnames = list(tmp.m, as.ch
 LookupyTa[ cbind(as.character(Lookupy$month), as.character(Lookupy$p)) ] = Lookupy$deltaTa
 rm(tmp.m, tmp.p)
 
+
+if(UseInline) {
 # Inline the values of LookupyQ and LookupyTa into QLookup and TaLookup body's expression.
 # Assumes both functions have no {} around the body, but each body is just a single call.
     b = body(QLookup)
@@ -166,7 +170,7 @@ rm(tmp.m, tmp.p)
         b[[2]] = LookupyTa
         body(TaLookup) = b
     }
-
+}
 
 
 #########
