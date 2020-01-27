@@ -153,23 +153,6 @@ LookupyTa[ cbind(as.character(Lookupy$month), as.character(Lookupy$p)) ] = Looku
 rm(tmp.m, tmp.p)
 
 
-if(UseInline) {
-     # Inline the values of LookupyQ and LookupyTa into QLookup and TaLookup body's expression.
-     # Assumes both functions have no {} around the body, but each body is just a single call.
-    b = body(QLookup)
-    if(is.symbol(b[[2]])) {
-        b[[2]] = LookupyQ
-        body(QLookup) = b
-    }
-
-    b = body(TaLookup)
-    if(is.symbol(b[[2]])) {
-        b[[2]] = LookupyTa
-        body(TaLookup) = b
-    }
-}
-
-
 #########
 #######ii. T|V
 ##########
@@ -219,12 +202,6 @@ NickelsWinterCoefficients=c(0.887, -0.264, 0.322,-0.253) #intercept, winter air 
 afconversion=810714 #AF
 springcoeff=NickelsSpringCoefficients*c(afconversion,1, afconversion,1) 
 wintercoeff=NickelsWinterCoefficients*c(afconversion,afconversion,1,afconversion) 
-
-if(UseInline) {
-  formals(SpringDeltaVc)$springcoeff = springcoeff
-  formals(WinterDeltaVc)$springcoeff = wintercoeff
-}
-
 
 #####################
 ###including spill/transition states in model state and action spaces
@@ -438,7 +415,8 @@ Rwstar=stagepolicy(Vstates,NoofStages)
 
 
 
-
+if(UseInline) 
+    source("inlineVariables.R")
 
 
 
