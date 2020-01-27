@@ -220,7 +220,10 @@ afconversion=810714 #AF
 springcoeff=NickelsSpringCoefficients*c(afconversion,1, afconversion,1) 
 wintercoeff=NickelsWinterCoefficients*c(afconversion,afconversion,1,afconversion) 
 
-
+if(UseInline) {
+  formals(SpringDeltaVc)$springcoeff = springcoeff
+  formals(WinterDeltaVc)$springcoeff = wintercoeff
+}
 
 
 #####################
