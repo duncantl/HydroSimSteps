@@ -373,23 +373,25 @@ choosesolve = choosesolveprep
 ####b. accumulative obj function
 #######################
 accumulate=function(month,S,Vcstates,Vwstates,VcSpace,RcstarWinter,VwSpace,Rcspace,Rwspace,VSpace,Rspace,p){  #lookup f*t+1 
-  fs = fstarvalue = matrix(0,nrow=length(Vstates),ncol=length(Rdecs))
-  for(j in 1:length(Rdecs)){ 
-      for(i in 1:length(Vstates)){
-          tmp = choosesolve(month,VwSpace[i,j],VcSpace[i,j],Rcspace[i,j], Rwspace[i,j], Rspace[i,j],VSpace[i,j],RcstarWinter,K, DP,p)
-          fs[i,j] = if(is.na(tmp) || tmp < 0)
-                       -9999 #remove infeasibles
-                    else
-                       which(Vcstates==OutgoingVc(S,VcSpace[i,j],RcstarWinter,VwSpace[i,j],Rcspace[i,j],Rwspace[i,j],p) & #,Vcstates)[i,j] & #this gives the location of Vcstates
-                             Vwstates==OutgoingVw(S, VwSpace[i,j], Rwspace[i,j],p)) #match Vw and Vc in LookupV table #location of Vw states
 
-        fstarvalue[i,j] = if(is.na(fs[i,j]) | fs[i,j] < 0)
-                            -9999 #remove infeasibles
-                          else
-                            fstar[fs[i,j],(S+1)] #get the fstar from t+1 with the matching Vw and Vc states
-    } 
-  } 
-  return(fstarvalue) #produces a matrix of fstartt+1 values to accumulate in the benefit function, looking backwards
+    fstarvalue = matrix(-9999, nrow=length(Vstates), ncol=length(Rdecs))
+    tmp = matrix( choosesolve(month, VwSpace, VcSpace, Rcspace, Rwspace, Rspace, VSpace, RcstarWinter, K, DP, p), nrow(fstarvalue), ncol(fstarvalue))
+    w = !is.na(tmp) & tmp >= 0
+        
+    s = S + 1
+    idx = which(w, TRUE)
+
+    for(ctr in seq_len(nrow(idx))) {
+        i = idx[ctr,1]
+        j = idx[ctr,2]
+        val = which(Vcstates==OutgoingVc(S,VcSpace[i,j],RcstarWinter,VwSpace[i,j],Rcspace[i,j],Rwspace[i,j],p) & #,Vcstates)[i,j] & #this gives the location of Vcstates
+                               Vwstates==OutgoingVw(S, VwSpace[i,j], Rwspace[i,j],p)) #match Vw and Vc in LookupV table #location of Vw states
+        fstarvalue[i,j] = fstar[val, s]
+        #??? Would doing the assignment in block be faster
+        #  fstarvalue[ idx ] = mapply(...)
+    }
+    
+    fstarvalue         
 }
 
 firststageaccumulate =
