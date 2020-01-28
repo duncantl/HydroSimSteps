@@ -384,13 +384,13 @@ Rspace=t(apply(basics,1,function(x)Rdecs))
 ##creates matrix for holding each stage calculation
 #can include y
 
-fstar=stagepolicy(Vstates,NoofStages)
+fstar = whichxstar = xstar = Rcstar = Rwstar = stagepolicy(Vstates,NoofStages)
 #whichf    #could possible shorten code by saying whichxstar=f, for all below options
-whichxstar=stagepolicy(Vstates,NoofStages)
+#!whichxstar=stagepolicy(Vstates,NoofStages)
 #stores the position of the optimal f to find xstar
-xstar=stagepolicy(Vstates,NoofStages) #river mile number
-Rcstar=stagepolicy(Vstates,NoofStages)
-Rwstar=stagepolicy(Vstates,NoofStages)
+#!xstar=stagepolicy(Vstates,NoofStages) #river mile number
+#!Rcstar=stagepolicy(Vstates,NoofStages)
+#!Rwstar=stagepolicy(Vstates,NoofStages)
 #############
 ####c. state transitions
 #############
@@ -466,34 +466,39 @@ Rstar=Rcstar+Rwstar
 #####################
 
 Rcaccumstar= Rwaccumstar = matrix(NA,nrow=length(Vstates),ncol=length(Rdecs))
+currentB = accumB = Vcoutdirect = Vwoutdirect = Vcoutacc = Vwoutacc = matrix(0,nrow=length(Vstates),ncol=length(Rdecs))
 
 for(S in (NoofStages-1):2){
   month=monthcounter(S)
   for(i in 1:pn){
     p=ystates[i]
-    currentB=matrix(choosesolve(month,VwSpace,VcSpace,Rcspace, Rwspace, Rspace,VSpace,RcstarWinter,K, DP,p),
-                  nrow=length(Vstates),ncol=length(Rdecs))
-#!!!    fs=matrix(0,nrow=length(Vstates),ncol=length(Rdecs))
-#!!!    fstarvalue=matrix(0,nrow=length(Vstates),ncol=length(Rdecs))
-  accumB=matrix(accumulate(month,S,Vcstates,Vwstates,VcSpace,RcstarWinter,VwSpace,Rcspace,Rwspace,VSpace,Rspace,p),
-                    nrow=length(Vstates),ncol=length(Rdecs))
-  intstage=pmin(currentB, accumB)
+#!    currentB=matrix(choosesolve(month,VwSpace,VcSpace,Rcspace, Rwspace, Rspace,VSpace,RcstarWinter,K, DP,p),       nrow=length(Vstates),ncol=length(Rdecs))
+    currentB[] = choosesolve(month,VwSpace,VcSpace,Rcspace, Rwspace, Rspace,VSpace,RcstarWinter,K, DP,p)
+
+#!  accumB = matrix(accumulate(month,S,Vcstates,Vwstates,VcSpace,RcstarWinter,VwSpace,Rcspace,Rwspace,VSpace,Rspace,p), nrow=length(Vstates),ncol=length(Rdecs))
+
+    accumB[] = accumulate(month, S, Vcstates,Vwstates,VcSpace,RcstarWinter,VwSpace,Rcspace,Rwspace,VSpace,Rspace,p)
+
+    intstage = pmin(currentB, accumB)
   
   ##get Rcstar
   #if choose accumulate then need to pick R from accumulate not choose, unless R is infeasible from accumulate (in which case use R from choose)
-  isaccum=ifelse(intstage<currentB, 1, NA)
+  isaccum = ifelse(intstage < currentB, 1, NA)
   
   ##get Rc_t+1
   
   #1. get Vc and Vw out for this S
-  Vcoutdirect=matrix(OutgoingVc(S,VcSpace, RcstarWinter,VwSpace,Rcspace,Rwspace,p),nrow=length(Vstates),ncol=length(Rdecs)) #gets end period storage VC
-  Vwoutdirect=matrix(OutgoingVw(S,VwSpace,Rwspace,p),nrow=length(Vstates),ncol=length(Rdecs)) #gets end period storage Vw
+  #! Vcoutdirect=matrix(OutgoingVc(S,VcSpace, RcstarWinter,VwSpace,Rcspace,Rwspace,p),nrow=length(Vstates),ncol=length(Rdecs)) #gets end period storage VC
+  #! Vwoutdirect=matrix(OutgoingVw(S,VwSpace,Rwspace,p),nrow=length(Vstates),ncol=length(Rdecs)) #gets end period storage Vw
 
+    Vcoutdirect[] = OutgoingVc(S,VcSpace, RcstarWinter,VwSpace,Rcspace,Rwspace,p) #gets end period storage VC
+    Vwoutdirect[] = OutgoingVw(S,VwSpace,Rwspace,p) #gets end period storage Vw
+    
   #2. get Rc_t+1 for those combinations for which accB < direct B
       #rule out infeasible outs with directR
 
 
-   Rcaccumstar[] = Rwaccumstar[] = NA
+    Rcaccumstar[] = Rwaccumstar[] = NA
     #lookup Rc_t+1 for each x based on its start of period storage ==current period end of storage (Vc and Vw out), only for feasible R_t+1 options
 
     idx = which(!is.na(isaccum), TRUE)
@@ -511,43 +516,70 @@ for(S in (NoofStages-1):2){
   #colnames(Rwaccumstar)=Rwdecs
   
   #3. use R direct t if R acc t+1 is infeasible
-  Vcoutacc=matrix(OutgoingVc(S, VcSpace,0,VwSpace,Rcaccumstar,Rwspace,p),nrow=length(Vstates),ncol=length(Rdecs))
-  Vwoutacc=matrix(OutgoingVw(S,VwSpace,Rwaccumstar,p),nrow=length(Vstates),ncol=length(Rdecs))
-  Voutacc=ifelse(Vcoutacc<0, NA,
-                 ifelse(Vwoutacc<0, NA,
-                        Vcoutacc+Vwoutacc))
+  #!Vcoutacc=matrix(OutgoingVc(S, VcSpace, 0, VwSpace, Rcaccumstar, Rwspace, p), nrow=length(Vstates), ncol=length(Rdecs))
+  #!Vwoutacc=matrix(OutgoingVw(S,VwSpace,Rwaccumstar,p),nrow=length(Vstates),ncol=length(Rdecs))
+
+   Vcoutacc[] = OutgoingVc(S, VcSpace, 0, VwSpace, Rcaccumstar, Rwspace, p)
+   Vwoutacc[] = OutgoingVw(S,VwSpace,Rwaccumstar,p)
+
+    Voutacc = Vcoutacc + Vwoutacc
+    Voutacc[ Vcoutacc < 0 | Vwoutacc < 0 ] = NA
+#!    Voutacc = ifelse(Vcoutacc<0, NA,
+#!                    ifelse(Vwoutacc<0, NA,
+#!                           Vcoutacc+Vwoutacc))
   
-  #4. is R acc infeasible
-  feasibleRcac=ifelse(Vcoutacc<Rcspace, NA,
-                      ifelse(Vwoutacc<Rwspace,NA, 
-                             ifelse(Voutacc > K | Voutacc <DP, NA, 
-                                    Rcaccumstar)))
-  feasibleRwac=ifelse(Vcoutacc<Rcspace, NA,
-                      ifelse(Vwoutacc<Rwspace,NA, 
-                             ifelse(Voutacc > K | Voutacc <DP, NA, 
-                                    Rwaccumstar)))
-  feasibleR=feasibleRcac*feasibleRwac
+    #4. is R acc infeasible
+    
+
+    feasibleRcac = feasibleRwac = rep(NA, length(Voutacc))
+    w = !( Vcoutacc < Rcspace | Vwoutacc < Rwspace | (Voutacc > K | Voutacc <DP))
+    w = w & !is.na(w) # Handle 
+    feasibleRcac[w] = Rcaccumstar[w]
+    feasibleRwac[w] = Rwaccumstar[w]    
+    
+#! feasibleRcac=ifelse(Vcoutacc<Rcspace, NA,
+#!                    ifelse(Vwoutacc<Rwspace,NA, 
+#!                           ifelse(Voutacc > K | Voutacc <DP, NA, 
+#!                                     Rcaccumstar)))    
+#! feasibleRwac=ifelse(Vcoutacc<Rcspace, NA,
+#!                     ifelse(Vwoutacc<Rwspace,NA, 
+#!                            ifelse(Voutacc > K | Voutacc <DP, NA, 
+#!                                   Rwaccumstar)))
+   feasibleR=feasibleRcac*feasibleRwac
   
   #5. get final R
-  finalRc=ifelse(is.na(feasibleRcac),Rcspace, feasibleRcac)
-  finalRw=ifelse(is.na(feasibleRwac),Rwspace, feasibleRwac)
-  finalR=finalRc+finalRw
+    #!  finalRc = ifelse(is.na(feasibleRcac),Rcspace, feasibleRcac)
+    #! finalRw=ifelse(is.na(feasibleRwac),Rwspace, feasibleRwac)
+    finalRc = feasibleRcac
+    w = is.na(feasibleRcac)
+    finalRc[w] = Rcspace[w]
+
+    finalRw = feasibleRwac
+    w = is.na(feasibleRwac)
+    finalRw[w] = Rwspace[w]    
+  
+    finalR=finalRc+finalRw
   
   ###get final x with final R
-  finalx=matrix(choosesolve(month,VwSpace,VcSpace,finalRc,finalRw, finalR, VSpace, 0, K, DP, p),
-                nrow=length(Vstates),ncol=length(Rdecs))
+  #finalx=matrix(choosesolve(month,VwSpace,VcSpace,finalRc,finalRw, finalR, VSpace, 0, K, DP, p), nrow=length(Vstates),ncol=length(Rdecs))
   
-  allstages[,,i,S]=finalx
+  allstages[,,i,S] = choosesolve(month, VwSpace, VcSpace, finalRc, finalRw, finalR, VSpace, 0, K, DP, p) # finalx
   #print(head(allstages[,,i,S]))[,1:20]
   }
   onestage=(allstages[,,1,S]+allstages[,,2,S]+allstages[,,3,S]+allstages[,,4,S]+allstages[,,5,S])/pn 
+  #Could use
+  #     onestage = apply(allstages[,,,S], c(1, 2), sum)/pn
+  # or add at the end in the inner loop
+  #   onestage = onestage + allstages[,,i,S]
+  # But curiously the apply() is not faster. Slower by .2 of a second.
   
-  
- #store data
-  fstar[,S]=ifelse(apply(onestage,1,max, na.rm=TRUE)<0, -9999, apply(onestage,1,max, na.rm=TRUE))
-whichxstar[,S]=apply(onestage,1,which.max) 
-  Rcstar[,S]=Rcdecs[whichxstar[,S]]
-  Rwstar[,S]=Rwdecs[whichxstar[,S]]
+  #store data
+  tmp = apply(onestage, 1, max, na.rm = TRUE)
+  tmp[tmp < 0] = -9999
+  fstar[,S] = tmp   # ifelse(apply(onestage,1,max, na.rm=TRUE)<0, -9999, apply(onestage,1,max, na.rm=TRUE))
+  idx = whichxstar[,S] = apply(onestage, 1, which.max)  
+  Rcstar[,S] = Rcdecs[idx]
+  Rwstar[,S] = Rwdecs[idx]
 }
 ########################
 ####c. first stage
