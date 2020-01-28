@@ -647,21 +647,23 @@ Rcaccumstarfirst = Rwaccumstarfirst = matrix(NA,nrow=length(1),ncol=length(Rdecs
  Voutaccfirst= Vcoutaccfirst + Vwoutaccfirst
  Voutaccfirst[ Vcoutaccfirst<0 | Vwoutaccfirst<0] = NA
 
-#4. is R acc infeasible
-feasibleRcacfirst=ifelse(Vcoutaccfirst<Rcdecs, NA,
-                    ifelse(Vwoutaccfirst<Rwdecs,NA, 
-                           ifelse(Voutaccfirst > K | Voutaccfirst <DP, NA, 
-                                  Rcaccumstarfirst)))
-feasibleRwacfirst=ifelse(Vcoutaccfirst<Rcdecs, NA,
-                    ifelse(Vwoutaccfirst<Rwdecs,NA, 
-                           ifelse(Voutaccfirst > K | Voutaccfirst <DP, NA, 
-                                  Rwaccumstarfirst)))
-feasibleRfirst=feasibleRcacfirst*feasibleRwacfirst
+ #4. is R acc infeasible
 
-#5. get final R
-finalRcfirst=ifelse(is.na(feasibleRcacfirst),Rcdecs, feasibleRcacfirst)
-finalRwfirst=ifelse(is.na(feasibleRwacfirst),Rwdecs, feasibleRwacfirst)
-finalRfirst=finalRcfirst+finalRwfirst
+  feasibleRcacfirst=Rcaccumstarfirst
+ w = ( Vcoutaccfirst < Rcdecs| Vwoutaccfirst < Rwdecs | Voutaccfirst > K | Voutaccfirst <DP)
+ w = is.na(w) | w
+ feasibleRcacfirst[w] = NA
+ feasibleRwacfirst = Rwaccumstarfirst
+ feasibleRwacfirst[w] = NA
+
+ feasibleRfirst=feasibleRcacfirst*feasibleRwacfirst
+
+ #5. get final R
+ finalRcfirst = feasibleRcacfirst
+ finalRcfirst[w] = Rcdecs[w]
+ finalRwfirst = feasibleRwacfirst
+ finalRwfirst[w] = Rwdecs[w] 
+ finalRfirst=finalRcfirst+finalRwfirst
 
     ###get final x with final R
      # finalxfirst=matrix(,nrow=length(1),ncol=length(Rdecs))
