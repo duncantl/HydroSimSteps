@@ -89,10 +89,9 @@ function(month,p)
 SpringDeltaVc = SpringDeltaVcprep =
 function(RcstarWinter,month, RC,p){
     tmp = springcoeff[1]+springcoeff[2]*RC+springcoeff[3]*as.numeric(TaLookup(month,p))+springcoeff[4]*as.numeric(QLookup(month,p))
-    DeltaVc = pmax(tmp, 0)
+    tmp[ tmp < 0] = 0
                  
-    mround(DeltaVc#-1.5*10^6
-                             ,bin)
+    mround(tmp, bin)
 }
 #SpringDeltaVc=Vectorize(SpringDeltaVcprep)
 
@@ -300,7 +299,8 @@ function(Vc,Vw,Rc,Rw,month)
 mixedsolve = mixedsolveprep=function(VW,VC,RC, RW, R, V, month, RcstarWinter, K, DP,p){ #when lake is mixed #matrices
   deltaVC=#ifelse(month=="February" || month=="March", deltaVC-springcoeff[2]*RC, WinterDeltaVc(month,p))
          ColdDelta(month, RcstarWinter,RC,p)
-  AvailableVc= pmax(VC+deltaVC, 0)
+  AvailableVc = VC+deltaVC
+  AvailableVc[AvailableVc < 0] = 0
 
   # R = as.numeric(R)
   ans = rep(-9999, length(RC)) # RC  
@@ -312,7 +312,8 @@ mixedsolve = mixedsolveprep=function(VW,VC,RC, RW, R, V, month, RcstarWinter, K,
 
 springsolve = springsolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initial conditions are no warm 
   deltaVw=QLookup(month,p)
-  AvailableVw = pmax(VW+deltaVw , 0)   #!!!  Vw rather than VW??
+  AvailableVw = VW + deltaVw           #!!!  Vw rather than VW??
+  AvailableVw[AvailableVw < 0] = 0
   # Old version with bug:
   #   AvailableVw = ifelse(VW+deltaVw < 0, 0, Vw + deltaVw)   #!!!  Vw rather than VW??
 
@@ -325,8 +326,9 @@ springsolve = springsolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initi
 
 summersolve = summersolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initial conditions are no warm (i dont like this, want VW to organically come online)
   deltaVw = QLookup(month,p)
-  AvailableVW= pmax(VW + deltaVw, 0)
-
+  AvailableVW = VW + deltaVw
+  AvailableVW[ AvailableVW < 0 ] = 0
+  
   ans = rep(-9999, length(VW))
   w = !(  (V + deltaVw - R < DP | V + deltaVw- R > K) | (VC < RC) | (VW + deltaVw < RW))
   ans[w] = benefit(VC, AvailableVW, RC, RW, month)[w]  #ifelse(Nmax< x, Nmax, x)
@@ -338,8 +340,9 @@ fallsolve = fallsolveprep=function(VW,VC,RC,RW,K,DP,month,p){ #initial condition
 
     deltaVc = QLookup(month,p)+VW-RW
     tmp = VC + deltaVc
-    AvailableVC = pmax(tmp, 0)
-
+    AvailableVC = tmp
+    AvailableVC[AvailableVC < 0] = 0
+    
     ans = rep(-9999, length(VC))
     w = !( (tmp - RC < DP | tmp - RC > K) | (tmp < RC) | (VW < RW) )
     ans[w] = benefit(AvailableVC,VW,RC,RW,month)[w]
