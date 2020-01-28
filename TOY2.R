@@ -371,14 +371,26 @@ stageslist=seq(1,NoofStages,1)
 #dimnames(allstages)[[4]]=as.list(stageslist)
 
 #state space (matrix)
-VcSpace=apply(basics,2,function(x)Vcstates)
-VwSpace=apply(basics,2,function(x)Vwstates)
-VSpace=apply(basics,2,function(x)Vstates)
+#!VcSpace=apply(basics,2,function(x)Vcstates)
+#!VwSpace=apply(basics,2,function(x)Vwstates)
+#!VSpace=apply(basics,2,function(x)Vstates)
 
 #choice space (matrix)
-Rcspace=t(apply(basics,1,function(x)Rcdecs))
-Rwspace=t(apply(basics,1,function(x)Rwdecs))
-Rspace=t(apply(basics,1,function(x)Rdecs))
+#!Rcspace=t(apply(basics,1,function(x)Rcdecs))
+#!Rwspace=t(apply(basics,1,function(x)Rwdecs))
+#!Rspace=t(apply(basics,1,function(x)Rdecs))
+
+NR = length(Vstates)
+NC = length(Rdecs)
+VcSpace = matrix(Vcstates, NR, NC)
+VwSpace = matrix(Vwstates,  NR, NC)
+VSpace = matrix(Vstates,  NR, NC)
+
+#choice space (matrix)
+#! Changed
+Rcspace=t(matrix(Rcdecs, NC, NR))
+Rwspace=t(matrix(Rwdecs, NC, NR))
+Rspace=t(matrix(Rdecs, NC, NR))
 
 #outcome spaces (matrices)
 ##creates matrix for holding each stage calculation
@@ -611,34 +623,29 @@ isaccumfirst=ifelse(firststage<currentfirstB, 1, NA)
 ##get Rc_t+1
 
 #1. get Vc and Vw out for this S
-Vcoutdirectfirst=matrix(OutgoingVc(S,Vcinitial,RcstarWinter,Vwinitial,Rcdecs,Rwdecs,p),nrow=length(1),ncol=length(Rdecs)) #gets end period storage VC
-Vwoutdirectfirst=matrix(OutgoingVw(S,Vwinitial,Rwdecs,p),nrow=length(1),ncol=length(Rdecs)) #gets end period storage Vw
+Vcoutdirectfirst = matrix(OutgoingVc(S,Vcinitial,RcstarWinter,Vwinitial,Rcdecs,Rwdecs,p),nrow=length(1),ncol=length(Rdecs)) #gets end period storage VC
+Vwoutdirectfirst = matrix(OutgoingVw(S,Vwinitial,Rwdecs,p),nrow=length(1),ncol=length(Rdecs)) #gets end period storage Vw
 
 #2. get Rc_t+1 for those combinations for which accB < direct B
 #rule out infeasible outs with directR
-Rcaccumstarfirst=matrix(0,nrow=length(1),ncol=length(Rdecs))
-Rwaccumstarfirst=matrix(0,nrow=length(1),ncol=length(Rdecs))
+Rcaccumstarfirst = Rwaccumstarfirst = matrix(NA,nrow=length(1),ncol=length(Rdecs))
 
 #lookup Rc_t+1 for each x based on its start of period storage ==current period end of storage (Vc and Vw out), only for feasible R_t+1 options
-for (r in 1:length(Rdecs)){
-  for (v in 1:length(1)){
-    Rcaccumstarfirst[v,r]=ifelse(is.na(isaccumfirst[v,r]), NA, 
-                                 Rcstar[which(Vcstates==Vcoutdirectfirst[v,r] & Vwstates==Vwoutdirectfirst[v,r]),S+1]
-    )
-    Rwaccumstarfirst[v,r]=ifelse(is.na(isaccumfirst[v,r]), NA, 
-                                 Rwstar[which(Vcstates==Vcoutdirectfirst[v,r] & Vwstates==Vwoutdirectfirst[v,r]),S+1]
-    )
+ if(any(!is.na(isaccumfirst[1,]))) {
+   for (r in 1:length(Rdecs)){
+     if(!is.na(isaccumfirst[1,r])) {
+         Rcaccumstarfirst[1,r]= Rcstar[which(Vcstates==Vcoutdirectfirst[1,r] & Vwstates==Vwoutdirectfirst[1,r]),S+1]
+         Rwaccumstarfirst[1,r]= Rwstar[which(Vcstates==Vcoutdirectfirst[1,r] & Vwstates==Vwoutdirectfirst[1,r]),S+1]
+     }
+   }
   }
-}
-#colnames(Rcaccumstarfirst)=Rcdecs
-#colnames(Rwaccumstarfirst)=Rwdecs
+
 
 #3. use R direct t if R acc t+1 is infeasible
-Vcoutaccfirst=matrix(OutgoingVc(S, Vcinitial,0,Vwinitial,Rcaccumstarfirst,Rwdecs,p),nrow=length(1),ncol=length(Rdecs))
-Vwoutaccfirst=matrix(OutgoingVw(S,Vwinitial,Rwaccumstarfirst,p),nrow=length(1),ncol=length(Rdecs))
-Voutaccfirst=ifelse(Vcoutaccfirst<0, NA,
-               ifelse(Vwoutaccfirst<0, NA,
-                      Vcoutaccfirst+Vwoutaccfirst))
+ Vcoutaccfirst=matrix(OutgoingVc(S, Vcinitial,0,Vwinitial,Rcaccumstarfirst,Rwdecs,p),nrow=length(1),ncol=length(Rdecs))
+ Vwoutaccfirst=matrix(OutgoingVw(S,Vwinitial,Rwaccumstarfirst,p),nrow=length(1),ncol=length(Rdecs))
+ Voutaccfirst= Vcoutaccfirst + Vwoutaccfirst
+ Voutaccfirst[ Vcoutaccfirst<0 | Vwoutaccfirst<0] = NA
 
 #4. is R acc infeasible
 feasibleRcacfirst=ifelse(Vcoutaccfirst<Rcdecs, NA,
@@ -656,11 +663,13 @@ finalRcfirst=ifelse(is.na(feasibleRcacfirst),Rcdecs, feasibleRcacfirst)
 finalRwfirst=ifelse(is.na(feasibleRwacfirst),Rwdecs, feasibleRwacfirst)
 finalRfirst=finalRcfirst+finalRwfirst
 
-###get final x with final R
-finalxfirst=matrix(choosesolve(month,Vwinitial,Vcinitial,finalRcfirst,finalRwfirst, finalRfirst, Vinitial, 0, K, DP, p),nrow=length(1),ncol=length(Rdecs))
- #allstages[,,i,S]=firststageprep
-firststageholding[,,i]=finalxfirst
-}
+    ###get final x with final R
+     # finalxfirst=matrix(,nrow=length(1),ncol=length(Rdecs))
+     #allstages[,,i,S]=firststageprep
+  firststageholding[,,i] = choosesolve(month,Vwinitial,Vcinitial,finalRcfirst,finalRwfirst, finalRfirst, Vinitial, 0, K, DP, p)
+} # end if for(i in 1:pn)
+
+
 firststage=(
   firststageholding[,,1]
   + firststageholding[,,2]+ firststageholding[,,3]+ firststageholding[,,4]+ firststageholding[,,5])/pn 
