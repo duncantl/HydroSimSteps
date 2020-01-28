@@ -678,40 +678,37 @@ Best=matrix(0,nrow=NoofStages,ncol = 5)
 colnames(Best)=c("Vc","Vw","Rc","Rw","x") # ,"month")
 rownames(Best) = monthcounter(1:NoofStages)
 Best[1,]=c(Vcinitial, Vwinitial,Rcstarone,Rwstarone,xstarone) # ,monthcounter(1))
+rangeVc = rangeVw = rangex = numeric(pn)  
 for(S in 2:NoofStages){
   ###for Vc 
   month=monthcounter(S-1)
-  rangeVc = numeric(pn)
   for(i in 1:pn){
     p=ystates[i]
     rangeVc[i]=OutgoingVcprep((S-1), Best[(S-1),1], RcstarWinter, Best[(S-1),2], Best[(S-1),3], Best[(S-1),4],p)
+    rangeVw[i]=OutgoingVwprep((S-1), Best[(S-1),2], Best[(S-1),4], p)    
   }
-  Best[S,1]=mround(sum(rangeVc)/pn,bin)
+  Best[S,1] = mround(sum(rangeVc)/pn,bin)
   ###for Vw
-  rangeVw= numeric(pn)
-  for(i in 1:pn){
-    p=ystates[i]
-    rangeVw[i]=OutgoingVwprep((S-1), Best[(S-1),2], Best[(S-1),4], p)
-  }
-  Best[S,2]=mround(sum(rangeVw)/pn,bin)
+  Best[S,2] = mround(sum(rangeVw)/pn,bin)
+  
   #month=monthcounter(S)
   #plocation=3 #p=0.5 is the third value
   idx = which(Vcstates== Best[S,1] & Vwstates == Best[S,2])
-  Best[S,3]=Rcstar[idx, S]
-  Best[S,4]=Rwstar[idx, S]
-  month=monthcounter(S)
-  rangex=numeric(pn)
+  Best[S,3] = Rcstar[idx, S]
+  Best[S,4] = Rwstar[idx, S]
+  month = monthcounter(S)
+
   for(i in 1:pn){
-    p=ystates[i]
+    p = ystates[i]
     # idx = which(Vcstates== Best[S,1] & Vwstates == Best[S,2])
     rangex[i]=matrix(choosesolve(month,VwSpace,VcSpace,Rcspace, Rwspace, Rspace,VSpace,RcstarWinter,K, DP,p)
                        ,nrow=length(Vcstates),ncol=length(Rdecs))[idx, whichxstar[idx, S]]
 
-    print(rangex[i])
+#    print(rangex[i])
   }
-  Best[S,5]=sum(rangex)/pn
+  Best[S,5] = sum(rangex)/pn
   # Best[S,6]=monthcounter(S)
-  print(S)
+  # print(S)
 }
 print(Best)
 #write.csv(Best,"VariableTempRBDDToyxp01.csv")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
