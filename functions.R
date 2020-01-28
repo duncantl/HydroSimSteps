@@ -80,7 +80,7 @@ body(lakeseasonbin)[[2]] = LakeseasonbinLookup
 
 WinterDeltaVc = WinterDeltaVcprep =
 function(month,p) 
-  mround(wintercoeff[1]+wintercoeff[2]*as.numeric(TaLookup(month,p))+wintercoeff[3]*as.numeric(QLookup(month,p))+wintercoeff[4]*1.6, bin) 
+  mround(wintercoeff[1]+wintercoeff[2]*TaLookup(month,p) + wintercoeff[3]*QLookup(month,p) + wintercoeff[4]*1.6, bin) 
 
 
 #WinterDeltaVc=Vectorize(WinterDeltaVcprep)
@@ -88,8 +88,8 @@ function(month,p)
 
 SpringDeltaVc = SpringDeltaVcprep =
 function(RcstarWinter,month, RC,p){
-    tmp = springcoeff[1]+springcoeff[2]*RC+springcoeff[3]*as.numeric(TaLookup(month,p))+springcoeff[4]*as.numeric(QLookup(month,p))
-    tmp[ tmp < 0] = 0
+    tmp = springcoeff[1]+springcoeff[2]*RC + springcoeff[3]* TaLookup(month,p)+springcoeff[4]* QLookup(month,p)
+    tmp[ tmp < 0 ] = 0
                  
     mround(tmp, bin)
 }
