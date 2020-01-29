@@ -1,0 +1,46 @@
+source("../sourceFuns.R")
+n = sourceFuns("functions.R")
+  # have to setwd to load the DLL
+setwd("../LaurenOrig"); fast = sourceFuns("functions.R"); setwd("../Code")
+library(CodeAnalysis)
+n.gfns = lapply(n, function(f) unique(getGlobals(f)$functions))
+all(sapply(n.gfns, function(x) length(grep("prep$", x, value = TRUE))) == 0)
+
+fns = intersect(names(n), names(fast))
+
+ans = mapply(function(a, b) {environment(a) = environment(b); all.equal(a,b)}, n[fns], fast[fns])
+fns[ans == "TRUE"]
+
+fns[ans != "TRUE"]
+
+
+ReleaseTemp - in LaurenOrig, got rid of 4 cbind() calls and computed maxVc and  maxVw once each and reused with new parameter and default values added.
+
+firststageaccumulate - LaurenOrig has the loop and scalar call within it to OutgoingVc and OutgoingVw (could be the prep versions).
+                       Commented out is the vectorized version from Code/.
+
+fallsolve - Code has tmp = VC + deltaVc and use that in 4 places to avoid recomputing. LaurenOrig has call to benefit() subset the arguments, not the result.
+springsolve -   call to benefit() with subset arguments, not result.
+summersolve - check if any(w) before calling benefit.  And subset arguments.  LaurenOrig didn't reuse  AvailableVW but recomputed sum for 
+
+**mixedsolve -  LaurenOrig ans[w] seems weird.
+
+choosesolve - [done] LaurenOrig: can avoid val as intermediate variable before call to switch as is.na() not needed.
+
+WinterDeltaVc - Code has as.numeric() for two TaLookup calls [fixed]
+SpringDeltaVc -  "
+
+OutgoingVc - Code has as.numeric() around the result of the switch()
+OutgoingVw - Code has as.numeric() in stratified if statement.  Should we also change this to a switch statement.
+
+OutgoingVwprep - Code version is vectorized, LaurenOrig is the (modified) scalar original.
+OutgoingVcprep - Same.
+
+ClrCk - different name of local variable ans/x
+Jelly -   "
+RBDD  -   "
+Balls -   "
+* mround -  added bin as default value for base
+* fishtemp - Code inlined FishtempLokup, LaurenOrig hasn't done this yet.
+
+QLookup & TaLookup - removed the cbind.
