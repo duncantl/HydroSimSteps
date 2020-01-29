@@ -22,16 +22,15 @@ Vdiscretizations=function(Vc,Vw){
 }
 
 
-finalinflowprep=function(month,Q){ #converts from cfs to taf
-  ifelse(month == "January" | month=="March" | month=="June" | month=="July" | month=="August" | month=="October" | month=="December", 
-                  Q*1.98*31, #Q*cfs to af* day number in month
-                  ifelse(month == "February", 
-                         Q*1.98*28,
-                         #as.numeric(Lookupy[which(Lookupy[,1]==month),3])*1.98*28,
-                         Q*1.98*30))
-}
-#finalinflow=Vectorize(finalinflowprep)
-finalinflow = finalinflowprep
+MonthDays = c("January" = 31, "February" = 28, "March" = 31, "April" = 30,
+              "May" = 31, "June" = 30, "July" = 31, 
+              "August" = 31, "September" = 30, "October" = 31, 
+              "November" = 30, "December" = 31)
+
+finalinflow = finalinflowprep =
+function(month, Q)    
+    MonthDays[ as.character(month) ] * 1.98 * Q
+
 
 TaLookupprep=function(month,p){
   Lookupy[which(Lookupy[,1]==month & Lookupy[,2]==p),4] #the max is just in case there are multiples 
