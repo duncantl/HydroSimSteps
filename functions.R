@@ -1,3 +1,10 @@
+cbind2 =
+function(a, b)
+  .Call("R_cbind2", a, b)
+
+dll = dyn.load("cbind2.so")
+body(cbind2)[[2]] = dll$R_cbind2$address
+
 mround <- function(x,base){ #this function ensures matching between stages
   base*round(x/base) 
 }
@@ -33,10 +40,10 @@ function(month, Q)
 
 
 QLookup = function(month, p) 
-    LookupyQ[ cbind(as.character(month), as.character(p)) ]
+    LookupyQ[ cbind2(as.character(month), as.character(p)) ]
 
 TaLookup = function(month, p) 
-    LookupyTa[ cbind(as.character(month), as.character(p)) ]
+    LookupyTa[ cbind2(as.character(month), as.character(p)) ]
 
 
 
@@ -163,9 +170,9 @@ function(VC, VW, RC, RW)
     if(any(w)) {
         w2 = VW > max(Vw) # should we do this on VW[w] and do the subsetting differently.
         w3 = w & w2
-        Tc[w3] = LookupTableTc[ cbind(as.character(VC[w3]), rep(as.character(max(Vw)), sum(w3))) ]
+        Tc[w3] = LookupTableTc[ cbind2(as.character(VC[w3]), rep(as.character(max(Vw)), sum(w3))) ]
         w3 = w & !w2
-        Tc[ w3 ] = LookupTableTc[ cbind(as.character(VC[w3]), as.character(VW[w3])) ]
+        Tc[ w3 ] = LookupTableTc[ cbind2(as.character(VC[w3]), as.character(VW[w3])) ]
     }
 
     Tw = rep(greaterTw, length(VW))
@@ -173,9 +180,9 @@ function(VC, VW, RC, RW)
     if(any(w)) {
         w2 = VC > max(Vc)
         w3 = w & w2
-        Tw[w3] = LookupTableTw[ cbind(rep(as.character(max(Vc)), sum(w3)), as.character(VW[w3])) ]
+        Tw[w3] = LookupTableTw[ cbind2(rep(as.character(max(Vc)), sum(w3)), as.character(VW[w3])) ]
         w3 = w & !w2
-        Tw[ w3 ] = LookupTableTw[ cbind(as.character(VC[w3]), as.character(VW[w3])) ]
+        Tw[ w3 ] = LookupTableTw[ cbind2(as.character(VC[w3]), as.character(VW[w3])) ]
     }    
 
     
