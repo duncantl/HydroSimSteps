@@ -1,0 +1,109 @@
+This is after rebasing!
+
+git show-ref --tags
+a4a5be9c786469120b31679e48b31110853d51ae refs/tags/ExploringCode.xml
+12f990876ba7e8e932766f1bdf28a4852e0f2735 refs/tags/GlobalVariables.xml
+060c9e2fcf5df403d433ecfa4dd3642ba4f112be refs/tags/IfElse2.xml
+c895f1bf5523b1e726f3e40ec90ad7d41f942ce8 refs/tags/IfElse_Or_Lookup.xml
+e8464f18625be759851de279a85b8a65de192f44 refs/tags/Inlining.xml
+681e3926cd34c713c941052a3591327b0cd82b7a refs/tags/MonthAsFactor.xml
+0e2a2c7ce06a86238c29a84a369765489cc79dbd refs/tags/SubsetDataFrame.xml
+68d7f8c051b88b045973b99d46f59af83ae370c0 refs/tags/TimeEval.xml
+daaaf90f51747aa584b791d61a2ff12a3ccb1ee1 refs/tags/Vectorize.xml
+c1f51cb8c26f1468e042812d6031f53bb026f0c3 refs/tags/Vectorize2.xml
+4ea56098fb00af99075f8767b8f6979e839e0d25 refs/tags/Vectorize3.xml
+3605dd8302d135b82f1ee1069acfbd2a54477161 refs/tags/Vectorize5.xml
+84e1f1b0e9f6c41d01d9129253999028812dc328 refs/tags/parallelLoops.xml
+73e189489c078620842803f4abaee79e249292d8 refs/tags/pmax.xml
+275ff15cf5f3070c3edd79c3a0085a41a2904a59 refs/tags/repeatedComputations.xml
+
+
+
+git log --oneline --decorate --tags --no-walk
+059ef0b (tag: parallelLoops.xml) compared functions in LaurenOrig and Code to see what is different.
+6dd4c13 (tag: Vectorize5.xml) changed accumulate to use same approach as we implemented in firststageaccumulate - take chooosesolve out of loop and call it with vectors. Only update the corresponding elements of fstarvalue (the result)  for which choosesolve() returns positive non-NA values.  Currently scalar calls to OutgoingVc and OutgoingVw for this. Could be vectorized.
+8e8ada1 (tag: pmax.xml) removed pmax from 5 functions - the *solve functions and SpringDeltaVc
+acbb914 (tag: Inlining.xml) move the inlining of the global variables into functions defined in functions.R into a separate file inlineVariables.R
+bdef6fc (tag: TimeEval.xml) now replace the slightly better changes to \!is.na(isaccum) to replace the nested loops over all cells with a single loop over the indices of the cells which are NA. Get the indices using which(, TRUE).  Now a single loop over significantly fewer cells
+751120e (tag: Vectorize3.xml) choosesolve implemented directly with mapply() and not Vectorize.  Explicitly drop the matrix structure to a numeric vector in OutgoingVw and OutgoingVc
+c3baeb2 (tag: SubsetDataFrame.xml) inline Lookupy columns directly as literals into the bodies of QLookup and TaLookup
+7d8468c (tag: IfElse2.xml) removed a tiny bit of repetition in the accumulate and firststageaccumulate where we had if() -9999 else if() -9999 else ...   So combine the two conditions that ended up yielding -9999
+5db830e (tag: Vectorize2.xml) Vectorize2.xml.  Drop the Vectorize() version for the 10 functions that are always called with all scalar values
+20eea20 (tag: MonthAsFactor.xml) MonthAsFactor.xml - change read.csv() for climate to avoid factors and use character vectors with stringsAsFactors = FALSE
+a8e5d2b (tag: IfElse_Or_Lookup.xml) change finalinflowprep to not use ifelse() but named lookup for the number of days in each month in a named-vector and index by month name. Also get the number of days in May and June the right way around
+b241083 (tag: Vectorize.xml) Simple vectorization of finalinflowprep() by replacing || with | and assigning finalinflow = finalinflowprep
+0503175 (tag: repeatedComputations.xml) removed repetition of the same computation in 9 functions. Simpler to read and modify, and also will be faster.
+5ca4460 (tag: GlobalVariables.xml) changed the code creating fs and fstarvalue to avoid repeating the same right-hand side by chaining the assignments
+ba498a4 (tag: ExploringCode.xml) added the 3 CSV files
+
+
+
+
+
+
+git log --pretty="format:%h %s"
+40f73e8 compared functions in LaurenOrig and Code to see what is different.
+0bcae5a clean up more ifelse() statements in the third loop in TOY2.R
+38c7b6c TOY2.R.  Change the creation of Vcspace, etc. to avoid using sapply() to replicate a vector.  In the 3rd longest-running loop, remove a) ifelse() statements, don't do the nested loop if there are no non-NA values in isaccumfirst().   Could get rid of the 1 row matrices and treat as vectors.
+ef94f52 changes to the 2nd most-time consuming loop - the last one. Removed the print() statements. Allocate rangex, rangeVw, rangeVc outside of the loop. Combine the two loops for rangeVc and rangeVw into one. Could use an sapply(). Could also vectorize the calls to OutgoingVc() instead. Not clear it will make a lot of difference.
+f1d2ea3 removed the as.numeric() calls in WinterDeltaVc and SpringDeltaVc. And white space additions
+9105dce noticed an error in the uncalled RBDD. Not returning ans but the result of the assignment to the subset. Comparing the functions in Code and LaurenOrig
+b7bba05 changes to one of the 2 loops. See ChangesByXMLFile.md for parallelLoops.xml
+dfdb477 changed accumulate to use same approach as we implemented in firststageaccumulate - take chooosesolve out of loop and call it with vectors. Only update the corresponding elements of fstarvalue (the result)  for which choosesolve() returns positive non-NA values.  Currently scalar calls to OutgoingVc and OutgoingVw for this. Could be vectorized.
+3581fe2 removed pmax from 5 functions - the *solve functions and SpringDeltaVc
+ebf969c move the inlining of the global variables into functions defined in functions.R into a separate file inlineVariables.R
+7315e63 use a form of localizing/inlining spring/wintercoeff into the WinterDeltaVc and SpringDeltaVc functions in functions.R after these vectors are created in TOY2.R.  These seems to give about .6 second gain.
+bd78664 inline literal values for seasonbin, lakeseasonbin, monthcounter as they are computed in this script and available when each function is defined
+c556dd8 indent 2 lines of comments in TOY2.R
+2396bfc removed the loop that sets monthlist element-by-element. Simple assignment.
+bd6e194 conditionally define UseInline variable at the top of the TOY2.R script, allowing the caller to set it before source'ing the script. Set it to TRUE by default. Then only inline literal objects into functions if this set.  Problematic as UseInline won't be set when we source the functions.R file. Perhaps set it via an option() also.
+0485794 firststageaccumulate now only does the subset of computations for updating only the elements for which choosesolve() returns a positive non-NA  value and avoids looping over all the values. And it does this via mapply() and vectorized assignments, rather than a loop and element-wise assignments.
+e4b9ea4 in firststageaccumulate, only loop over the elements that need to be set, not all elements and check to see whether to set it
+bb5c49b in firststageaccumulate, move the call to choosesolve() outside of the loop and call it with the vectors not the scalars.  See choosesolve to be choosesolvprep as it is already vectorized since month is always scalar and choosesolveprep calls other now-vectorized functions.  Also change the logic in the firststageaccumlate to avoid creating and setting fs for no good reason.
+d2f149c now replace the slightly better changes to \!is.na(isaccum) to replace the nested loops over all cells with a single loop over the indices of the cells which are NA. Get the indices using which(, TRUE).  Now a single loop over significantly fewer cells
+e343544 clean up the \!is.na(isaccum[v,r]) loop by removing the comments for the previous version
+8d6f93c In the intermediate stage loop, avoid redundant code in setting Rcaccumstar and Rwaccumstar[v,r] elements. Only do it if isaccum[v,r] is NA. Compute the row index once and reuse in 2 places. We will make this more efficient later.
+01a3773 with Best now a numeric matrix, we can remove the 8 calls to as.numeric(Best[S, i]).  Also, the last place we compute idx to avoid repeating the same code is constant within in the loop and we computed previously. So we can comment that out
+84ca7e6 changed Best to be a numeric matrix, not a character matrix. Put the 6th column of month names as rownames of the matrix.
+58913c2 preallocate numeric(pn) vectors where was just vector() and no type and values concatenated to the end. Also remove repeated code in indexing of Best to do the computations once rather than twice and also make the code clearer
+3364b31 moved the creation of Rcaccumstar and Rwaccumstar outside of loop and set default value of cell to be NA.  Reset all values within the loop via obj[] = NA.  Also chain the definition to avoid duplicate code
+ffb7852 remove the previous definition of ReleaseTemp that we overrode with the vectorized version
+cbfe2e3 choosesolve implemented directly with mapply() and not Vectorize.  Explicitly drop the matrix structure to a numeric vector in OutgoingVw and OutgoingVc
+70ee3f5 ReleaseTemp - vectorized version that uses 2-way table and cbind() to look tables we create in TOY2.R
+7e52851 Vectorized version of benefit. Uses explicit indices for which subsets to set from computations from calls to Jelly, ClrCk, ...
+0303bde Vectorize ColdDelta with rep() for the winter case and vectorized version of SpringDeltaVc which      already vectorized math operations.
+9e442a6 use a 2-way table and cbind() to index it in QLookup and TaLookup so that these are vectorized. Still called with scalars.
+8824b7d don't use Vectorize() for choosesolve but define the function and have it directly call mapply() without the additional overhead Vectorize() introduces in this simple case. We will ultimately remove this and vectorize choosesolve properly
+00a7126 Vectorized versions of OutgoingVc and OutgoingVw and assign these to the corresponding prep versions as those are called directly from TOY2.R script
+60419f0 inline Lookupy columns directly as literals into the bodies of QLookup and TaLookup
+a9caeb3 remove the unnecessary as.numeric() for the result of QLookup since the column is already numeric.  Also, remove the intermediate variable.  And remove the {} around the body since there is only one expression in the body of each of QLookup and TaLookup
+c5937d8 remove the unnecessary which() in QLookup and TaLookup
+63e1a31 switch QLookup and TaLookup to use  [[ col ]] rather than [, col ] for the data.frame Lookupy
+db4f2ff removed a tiny bit of repetition in the accumulate and firststageaccumulate where we had if() -9999 else if() -9999 else ...   So combine the two conditions that ended up yielding -9999
+49cddcd removed ifelse() from accumulate and firststageaccumulate. Checked the results agree with the previously cached calls from the original versions
+f419e55 removed ifelse() from scalar version of benefit(). Verified it gives the same results as the original via the cached calls
+65f253a fixed springsolve that had partially negated/inverted the logic for one condition as to when to call benefit and that gave different results.  Found this by use the previously cached calls from the original versions of the functions.
+830c380 ReleaseTemp: deal with case where Tc or Tw is empty vector and return NA as the ifelse() code would have. This then runs the script TOY2.R without wanrnings but appears to give output that differs from the original in the last loop with a few consecutive -9999 values printed.
+e128318 For ReleaseTemp, replace the ifelse() triples with if-else if-else in 3 expressions. Also corrected name of Tc variable from TC
+44af053 In SpringDeltaVc, replace ifelse with pmax
+bade489 remove ifelse from ColdDeltaprep but not vectorized in month.  Use pmax in summersolve
+b799f31 remove ifelse() from choosesolveprep via a switch() call; OutgoingVcprep via switch(); OutgoingVwprep via if-else if - else and %in%.  Rename sb to val in OutgoingVwprep
+7ddccea remove ifelse() from fallsolve and summersolve
+6d3c132 remove ifelse() from seasonbin() and lakeseasonbin() by using named-lookup into vectors of values.
+5f97c40 similar change for mixedsolve as for springsolve.  Also, fixed pasto in springsolve we just committed. And make certain to return ans, and don't leave the last line as ans[w] = benefit(...)[w]
+db51e6e removed ifelse() from springsolve() by merging the conditions for the 3 nested ifelse() into a single logical. When none of the conditions are true, we call benefit. Note call benefit() with all of the inputs, not a subset of them corresponding to w, and then subset the entire result. So extra unnecessary computations.
+219297c moved 5 constants from TOY2.R to functions.R which are used in the fishtemp() function. Then implement the fishtemp() function as a named-lookup table.
+18938c0 IfElse2.xml for monthcounter()
+31ecfdb IfElse2.xml but only for Jelly, Balls, ClrCk, RBDD.  Fixed cut-and-pasto
+ab12860 Vectorize2.xml.  Drop the Vectorize() version for the 10 functions that are always called with all scalar values
+ecc3464 MonthAsFactor.xml - change read.csv() for climate to avoid factors and use character vectors with stringsAsFactors = FALSE
+81f75ef change finalinflowprep to not use ifelse() but named lookup for the number of days in each month in a named-vector and index by month name. Also get the number of days in May and June the right way around.  Fixup use of monthDays to MonthDays
+b241083 Simple vectorization of finalinflowprep() by replacing || with | and assigning finalinflow = finalinflowprep
+0503175 removed repetition of the same computation in 9 functions. Simpler to read and modify, and also will be faster.
+6edfa72 removed all of the ans = ...; return(ans) with simply ... and no assignment to inteermediate variable and explicit return
+5ca4460 changed the code creating fs and fstarvalue to avoid repeating the same right-hand side by chaining the assignments
+7127e04 moved the creation of fs and fstartvalue in each of 2 loops to accumulate and firststageaccumulate functions
+ba498a4 added the 3 CSV files
+51de27d commented out calls to rm(), setwd() and require(zoo) and changed na.locf to zoo::na.locf to avoid loading the zoo package.
+4b25134 moved the Vectorize() calls from TOY2.R to functions.R. Both parse correctly and there are 15 Vectorize() calls in functions.R, none in TOY2.R
+d9c7902 moved the function definitions from TOY2.R to functions.R. Vectorize() calls still in TOY2.R
