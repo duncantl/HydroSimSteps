@@ -1,19 +1,27 @@
 This is a case study in making R code more efficient. This shows various different complementary
 approaches. We also show how to explore and become familiar with somebody else's code. We use a
 variety of meta-programming and instrumentation tools to explore and measure the characteristics of
-the code.
+the code. A key concept is that we try do as much to understand the code in a programmatic
+way rather than reading it ourselves.
 
 This is authentic code from a problem of finding the optimal water release strategy for
 a reservoir releasing cold and warm water at different times of the year to positively
 impact fish populations down-stream of the dam, while maintaining adequate water resources
 for potential droughts in the summer and avoiding exceeding capacity in rainy seasons.
 
+Ultimately, we'll get a speedup of between 425 to 500 depending on when we run the 
+baseline and our "best" version of the code. This corresponds to code that took
+1 day to run would now take 2.8 and 3.2 minutes!
+
+However, we still have serious memory issues that require a different approach.
+
 Sincere thanks to Dr. Lauren Adams for sharing this code with us.
 
-## Focal File
+## File to focus on!
 The key initial file is 
 
-+  TOY.R
++  [TOY.R](TOY.R)
+
 
 
 ## Challenges
@@ -29,6 +37,8 @@ The high-level challenges are to:
 
 + What information would you want to have about the code for each of these steps?
 + How can we get that information?
+
+
 
 
 ## Useful packages
