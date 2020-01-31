@@ -1,0 +1,62 @@
+[1] "benefitCallSubset.xml"
+[1] "Sandbox"
+read functions
+             Vc    Vw    Rc    Rw  x
+January   1e+06 0e+00 0e+00 0e+00 36
+February  2e+06 0e+00 1e+06 0e+00 36
+March     4e+06 0e+00 3e+06 0e+00 36
+April     3e+06 0e+00 2e+06 1e+06 36
+May       1e+06 1e+06 0e+00 2e+06  0
+June      1e+06 2e+06 0e+00 3e+06  0
+July      1e+06 2e+06 1e+06 1e+06 36
+August    0e+00 3e+06 0e+00 3e+06 36
+September 0e+00 2e+06 0e+00 2e+06 36
+October   0e+00 2e+06 0e+00 2e+06 36
+November  0e+00 2e+06 0e+00 2e+06 36
+December  3e+06 0e+00 1e+06 0e+00 36
+January   4e+06 0e+00 2e+06 0e+00 36
+February  3e+06 0e+00 2e+06 0e+00 36
+March     4e+06 0e+00 3e+06 0e+00 36
+April     3e+06 0e+00 2e+06 1e+06 36
+May       1e+06 1e+06 1e+06 1e+06 36
+[1] "Sandbox/benefitCallSubset.xml.prof"
+             Vc    Vw    Rc    Rw  x
+January   1e+06 0e+00 0e+00 0e+00 36
+February  2e+06 0e+00 1e+06 0e+00 36
+March     4e+06 0e+00 3e+06 0e+00 36
+April     3e+06 0e+00 2e+06 1e+06 36
+May       1e+06 1e+06 0e+00 2e+06  0
+June      1e+06 2e+06 0e+00 3e+06  0
+July      1e+06 2e+06 1e+06 1e+06 36
+August    0e+00 3e+06 0e+00 3e+06 36
+September 0e+00 2e+06 0e+00 2e+06 36
+October   0e+00 2e+06 0e+00 2e+06 36
+November  0e+00 2e+06 0e+00 2e+06 36
+December  3e+06 0e+00 1e+06 0e+00 36
+January   4e+06 0e+00 2e+06 0e+00 36
+February  3e+06 0e+00 2e+06 0e+00 36
+March     4e+06 0e+00 3e+06 0e+00 36
+April     3e+06 0e+00 2e+06 1e+06 36
+May       1e+06 1e+06 1e+06 1e+06 36
+   user  system elapsed 
+  1.507   0.035   1.551 
+                self.time self.pct total.time total.pct
+"cbind2"             0.76    51.35       0.76     51.35
+"ReleaseTemp"        0.16    10.81       0.92     62.16
+"eval"               0.08     5.41       1.46     98.65
+"accumulate"         0.08     5.41       0.46     31.08
+"which"              0.04     2.70       0.12      8.11
+"cmpCall"            0.04     2.70       0.08      5.41
+"summersolve"        0.04     2.70       0.08      5.41
+"is.na"              0.04     2.70       0.04      2.70
+"springsolve"        0.04     2.70       0.04      2.70
+"mixedsolve"         0.02     1.35       0.92     62.16
+"genCode"            0.02     1.35       0.08      5.41
+"OutgoingVw"         0.02     1.35       0.06      4.05
+"QLookup"            0.02     1.35       0.04      2.70
+"as.list"            0.02     1.35       0.02      1.35
+"fishtemp"           0.02     1.35       0.02      1.35
+"gc"                 0.02     1.35       0.02      1.35
+"lakeseasonbin"      0.02     1.35       0.02      1.35
+"pmin"               0.02     1.35       0.02      1.35
+"scan"               0.02     1.35       0.02      1.35

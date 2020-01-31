@@ -1,0 +1,63 @@
+[1] "cbind5.xml"
+[1] "Sandbox"
+read functions
+             Vc    Vw    Rc    Rw  x
+January   1e+06 0e+00 0e+00 0e+00 36
+February  2e+06 0e+00 1e+06 0e+00 36
+March     4e+06 0e+00 3e+06 0e+00 36
+April     3e+06 0e+00 2e+06 1e+06 36
+May       1e+06 1e+06 0e+00 2e+06  0
+June      1e+06 2e+06 0e+00 3e+06  0
+July      1e+06 2e+06 1e+06 1e+06 36
+August    0e+00 3e+06 0e+00 3e+06 36
+September 0e+00 2e+06 0e+00 2e+06 36
+October   0e+00 2e+06 0e+00 2e+06 36
+November  0e+00 2e+06 0e+00 2e+06 36
+December  3e+06 0e+00 1e+06 0e+00 36
+January   4e+06 0e+00 2e+06 0e+00 36
+February  3e+06 0e+00 2e+06 0e+00 36
+March     4e+06 0e+00 3e+06 0e+00 36
+April     3e+06 0e+00 2e+06 1e+06 36
+May       1e+06 1e+06 1e+06 1e+06 36
+[1] "Sandbox/cbind5.xml.prof"
+             Vc    Vw    Rc    Rw  x
+January   1e+06 0e+00 0e+00 0e+00 36
+February  2e+06 0e+00 1e+06 0e+00 36
+March     4e+06 0e+00 3e+06 0e+00 36
+April     3e+06 0e+00 2e+06 1e+06 36
+May       1e+06 1e+06 0e+00 2e+06  0
+June      1e+06 2e+06 0e+00 3e+06  0
+July      1e+06 2e+06 1e+06 1e+06 36
+August    0e+00 3e+06 0e+00 3e+06 36
+September 0e+00 2e+06 0e+00 2e+06 36
+October   0e+00 2e+06 0e+00 2e+06 36
+November  0e+00 2e+06 0e+00 2e+06 36
+December  3e+06 0e+00 1e+06 0e+00 36
+January   4e+06 0e+00 2e+06 0e+00 36
+February  3e+06 0e+00 2e+06 0e+00 36
+March     4e+06 0e+00 3e+06 0e+00 36
+April     3e+06 0e+00 2e+06 1e+06 36
+May       1e+06 1e+06 1e+06 1e+06 36
+   user  system elapsed 
+  1.213   0.057   1.273 
+                self.time self.pct total.time total.pct
+"ReleaseTemp"        0.34    28.81       0.62     52.54
+"cbind2"             0.28    23.73       0.28     23.73
+"eval"               0.08     6.78       1.16     98.31
+"mixedsolve"         0.08     6.78       0.76     64.41
+"benefit"            0.04     3.39       0.68     57.63
+"OutgoingVc"         0.04     3.39       0.06      5.08
+"summersolve"        0.04     3.39       0.06      5.08
+"springsolve"        0.04     3.39       0.04      3.39
+"source"             0.02     1.69       1.18    100.00
+"findCenvVar"        0.02     1.69       0.04      3.39
+"OutgoingVw"         0.02     1.69       0.04      3.39
+"SpringDeltaVc"      0.02     1.69       0.04      3.39
+"aperm.default"      0.02     1.69       0.02      1.69
+"array"              0.02     1.69       0.02      1.69
+"findFunDef"         0.02     1.69       0.02      1.69
+"Jelly"              0.02     1.69       0.02      1.69
+"mround"             0.02     1.69       0.02      1.69
+"new.env"            0.02     1.69       0.02      1.69
+"QLookup"            0.02     1.69       0.02      1.69
+"scan"               0.02     1.69       0.02      1.69

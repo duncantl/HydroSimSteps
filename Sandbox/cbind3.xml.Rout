@@ -1,0 +1,62 @@
+[1] "cbind3.xml"
+[1] "Sandbox"
+read functions
+             Vc    Vw    Rc    Rw  x
+January   1e+06 0e+00 0e+00 0e+00 36
+February  2e+06 0e+00 1e+06 0e+00 36
+March     4e+06 0e+00 3e+06 0e+00 36
+April     3e+06 0e+00 2e+06 1e+06 36
+May       1e+06 1e+06 0e+00 2e+06  0
+June      1e+06 2e+06 0e+00 3e+06  0
+July      1e+06 2e+06 1e+06 1e+06 36
+August    0e+00 3e+06 0e+00 3e+06 36
+September 0e+00 2e+06 0e+00 2e+06 36
+October   0e+00 2e+06 0e+00 2e+06 36
+November  0e+00 2e+06 0e+00 2e+06 36
+December  3e+06 0e+00 1e+06 0e+00 36
+January   4e+06 0e+00 2e+06 0e+00 36
+February  3e+06 0e+00 2e+06 0e+00 36
+March     4e+06 0e+00 3e+06 0e+00 36
+April     3e+06 0e+00 2e+06 1e+06 36
+May       1e+06 1e+06 1e+06 1e+06 36
+[1] "Sandbox/cbind3.xml.prof"
+             Vc    Vw    Rc    Rw  x
+January   1e+06 0e+00 0e+00 0e+00 36
+February  2e+06 0e+00 1e+06 0e+00 36
+March     4e+06 0e+00 3e+06 0e+00 36
+April     3e+06 0e+00 2e+06 1e+06 36
+May       1e+06 1e+06 0e+00 2e+06  0
+June      1e+06 2e+06 0e+00 3e+06  0
+July      1e+06 2e+06 1e+06 1e+06 36
+August    0e+00 3e+06 0e+00 3e+06 36
+September 0e+00 2e+06 0e+00 2e+06 36
+October   0e+00 2e+06 0e+00 2e+06 36
+November  0e+00 2e+06 0e+00 2e+06 36
+December  3e+06 0e+00 1e+06 0e+00 36
+January   4e+06 0e+00 2e+06 0e+00 36
+February  3e+06 0e+00 2e+06 0e+00 36
+March     4e+06 0e+00 3e+06 0e+00 36
+April     3e+06 0e+00 2e+06 1e+06 36
+May       1e+06 1e+06 1e+06 1e+06 36
+   user  system elapsed 
+  2.228   0.054   2.283 
+              self.time self.pct total.time total.pct
+"cbind2"           1.08    53.47       1.08     53.47
+"ReleaseTemp"      0.48    23.76       1.56     77.23
+"eval"             0.08     3.96       2.00     99.01
+"summersolve"      0.04     1.98       0.74     36.63
+"mixedsolve"       0.04     1.98       0.62     30.69
+"array"            0.04     1.98       0.04      1.98
+"benefit"          0.02     0.99       1.60     79.21
+"matrix"           0.02     0.99       0.84     41.58
+"accumulate"       0.02     0.99       0.40     19.80
+"OutgoingVc"       0.02     0.99       0.06      2.97
+"mround"           0.02     0.99       0.04      1.98
+"/"                0.02     0.99       0.02      0.99
+"$"                0.02     0.99       0.02      0.99
+"file"             0.02     0.99       0.02      0.99
+"grep"             0.02     0.99       0.02      0.99
+"ifelse"           0.02     0.99       0.02      0.99
+"Jelly"            0.02     0.99       0.02      0.99
+"OutgoingVw"       0.02     0.99       0.02      0.99
+"scan"             0.02     0.99       0.02      0.99

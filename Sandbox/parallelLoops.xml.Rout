@@ -1,0 +1,63 @@
+[1] "parallelLoops.xml"
+[1] "Sandbox"
+read functions
+             Vc    Vw    Rc    Rw  x
+January   1e+06 0e+00 0e+00 0e+00 36
+February  2e+06 0e+00 1e+06 0e+00 36
+March     4e+06 0e+00 3e+06 0e+00 36
+April     3e+06 0e+00 2e+06 1e+06 36
+May       1e+06 1e+06 0e+00 2e+06  0
+June      1e+06 2e+06 0e+00 3e+06  0
+July      1e+06 2e+06 1e+06 1e+06 36
+August    0e+00 3e+06 0e+00 3e+06 36
+September 0e+00 2e+06 0e+00 2e+06 36
+October   0e+00 2e+06 0e+00 2e+06 36
+November  0e+00 2e+06 0e+00 2e+06 36
+December  3e+06 0e+00 1e+06 0e+00 36
+January   4e+06 0e+00 2e+06 0e+00 36
+February  3e+06 0e+00 2e+06 0e+00 36
+March     4e+06 0e+00 3e+06 0e+00 36
+April     3e+06 0e+00 2e+06 1e+06 36
+May       1e+06 1e+06 1e+06 1e+06 36
+[1] "Sandbox/parallelLoops.xml.prof"
+             Vc    Vw    Rc    Rw  x
+January   1e+06 0e+00 0e+00 0e+00 36
+February  2e+06 0e+00 1e+06 0e+00 36
+March     4e+06 0e+00 3e+06 0e+00 36
+April     3e+06 0e+00 2e+06 1e+06 36
+May       1e+06 1e+06 0e+00 2e+06  0
+June      1e+06 2e+06 0e+00 3e+06  0
+July      1e+06 2e+06 1e+06 1e+06 36
+August    0e+00 3e+06 0e+00 3e+06 36
+September 0e+00 2e+06 0e+00 2e+06 36
+October   0e+00 2e+06 0e+00 2e+06 36
+November  0e+00 2e+06 0e+00 2e+06 36
+December  3e+06 0e+00 1e+06 0e+00 36
+January   4e+06 0e+00 2e+06 0e+00 36
+February  3e+06 0e+00 2e+06 0e+00 36
+March     4e+06 0e+00 3e+06 0e+00 36
+April     3e+06 0e+00 2e+06 1e+06 36
+May       1e+06 1e+06 1e+06 1e+06 36
+   user  system elapsed 
+  2.233   0.055   2.290 
+                        self.time self.pct total.time total.pct
+"cbind"                      0.92       46       0.92        46
+"ReleaseTemp"                0.50       25       1.42        71
+"eval"                       0.10        5       1.98        99
+"which"                      0.06        3       0.12         6
+"matrix"                     0.04        2       0.88        44
+"mixedsolve"                 0.04        2       0.62        31
+"Jelly"                      0.04        2       0.04         2
+"lapply"                     0.04        2       0.04         2
+"OutgoingVc"                 0.04        2       0.04         2
+"benefit"                    0.02        1       1.54        77
+"summersolve"                0.02        1       0.66        33
+"accumulate"                 0.02        1       0.50        25
+"cmpSym"                     0.02        1       0.04         2
+"anyDuplicated.default"      0.02        1       0.02         1
+"c"                          0.02        1       0.02         1
+"findCenvVar"                0.02        1       0.02         1
+"gc"                         0.02        1       0.02         1
+"ifelse"                     0.02        1       0.02         1
+"monthcounter"               0.02        1       0.02         1
+"scan"                       0.02        1       0.02         1
