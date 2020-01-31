@@ -313,7 +313,11 @@ mixedsolve = mixedsolveprep=function(VW,VC,RC, RW, R, V, month, RcstarWinter, K,
   # R = as.numeric(R)
   ans = rep(-9999, length(RC)) # RC  
   w = ! ( (VW>0 | as.numeric(RW) > 0) | (VC +deltaVC < as.numeric(RC)) | (V + deltaVC - R < DP | V + deltaVC - R > K))
-  ans[w] = benefit(AvailableVc, VW, RC, RW, month)[w]
+  if(any(w)) {
+#      if(length(VW) == 1) VW = rep(VW, length(VW))
+#      ans[w] = benefit(AvailableVc[w], VW[w], RC[w], RW[w], month) #XXX revisit      
+     ans[w] = rep_len(benefit(AvailableVc, VW, RC, RW, month), length(R))[w] #XXX revisit
+ }
   ans
 }
 #mixedsolve=Vectorize(mixedsolveprep)
@@ -327,7 +331,7 @@ springsolve = springsolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initi
 
   ans = rep(-9999, length(VW))
   w = !( VW > 0 | (V + deltaVw - R < DP | V + deltaVw - R > K) | (VC < RC | VW + deltaVw < RW ) )
-  ans[w] =  benefit(VC, AvailableVw, RC, RW, month)[w]
+  ans[w] =  benefit(VC[w], AvailableVw[w], RC[w], RW[w], month)
   ans
 }
 
@@ -339,7 +343,7 @@ summersolve = summersolveprep=function(VW,VC,RC, RW, R, V,K, DP,month,p){ #initi
   
   ans = rep(-9999, length(VW))
   w = !(  (V + deltaVw - R < DP | V + deltaVw- R > K) | (VC < RC) | (VW + deltaVw < RW))
-  ans[w] = benefit(VC, AvailableVW, RC, RW, month)[w]  #ifelse(Nmax< x, Nmax, x)
+  ans[w] = benefit(VC[w], AvailableVW[w], RC[w], RW[w], month)  #ifelse(Nmax< x, Nmax, x)
   ans
 }
 
@@ -353,7 +357,7 @@ fallsolve = fallsolveprep=function(VW,VC,RC,RW,K,DP,month,p){ #initial condition
     
     ans = rep(-9999, length(VC))
     w = !( (tmp - RC < DP | tmp - RC > K) | (tmp < RC) | (VW < RW) )
-    ans[w] = benefit(AvailableVC,VW,RC,RW,month)[w]
+    ans[w] = benefit(AvailableVC[w], VW[w], RC[w], RW[w], month)
     ans
 }
 # fallsolve=Vectorize(fallsolveprep)
