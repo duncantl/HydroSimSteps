@@ -1,5 +1,5 @@
 if(!exists("UseInline"))
-  UseInline = TRUE
+  UseInline = FALSE
 
 ###########
 ###table of contents
@@ -49,7 +49,7 @@ if(!exists("UseInline"))
 #setwd("C:/Users/leadams/Desktop/ShastaDam/DP")
 getwd()
 ####c.global functions
-monthlist = month.name
+#Un monthlist = month.name
 #######
 ##exogenous information
 #######
@@ -58,8 +58,8 @@ monthlist = month.name
 #####
 NoofStages=17 #number of stages in program
 bin=10^6 #storage discretization unit
-Tsep=52 #temperature at which layers were separated into "cold' and "warm" with file "ExploringInputDataEachVwVc"
-roundingdigits=6 #10^6
+#Un Tsep=52 #temperature at which layers were separated into "cold' and "warm" with file "ExploringInputDataEachVwVc"
+#Un roundingdigits=6 #10^6
 Vcinitial=bin #initial conditions
 Vwinitial=0#need to check the month bin #initial conditions
 Vinitial=Vcinitial+Vwinitial #total storage in reservoir
@@ -74,7 +74,7 @@ p=0.99
 #state vars
 Vc=seq(0,Max, bin) #sequence of Vc choices 
 Vw=seq(0,Max, bin) #sequence of Vw choices
-V=Vc+Vw
+#Un V=Vc+Vw
 L=seq(-0.5*bin, Max+0.5*bin, bin) #makes bins 
 ###state space
 
@@ -89,16 +89,16 @@ Vstates=Vcstates+Vwstates
 #Rc=Vc #decision variables must equal bin discretizations to look forward and backward in time
 nospillRc=Vc #seq(0,Max+4*10^6, bin)
 nospillRw=Vw #Rc
-nospillR=nospillRc+nospillRw
+#Un nospillR=nospillRc+nospillRw
 #approximated set of action choices
 nospillRdiscretizations=Vdiscretizations(nospillRc,nospillRw)
-nospillRoptions=t(Vdiscretizations(nospillRc,nospillRw)[c(1:2),])
-colnames(nospillRoptions)=c("nospillRc","nospillRw")
+#Un nospillRoptions=t(Vdiscretizations(nospillRc,nospillRw)[c(1:2),])
+#Un colnames(nospillRoptions)=c("nospillRc","nospillRw")
 #rownames(Rdiscretizations)=c("Rw","Rc","R")
 #decisoin space options (vector)
 nospillRcdecs=nospillRdiscretizations[2,]#Vcstates
 nospillRwdecs=nospillRdiscretizations[1,]#"Vwstates
-nospillRdecs=nospillRcdecs+nospillRwdecs
+#Un nospillRdecs=nospillRcdecs+nospillRwdecs
 
 ####d. non-release dependent LookupTables
 #####
@@ -163,7 +163,7 @@ all=read.csv("TwopoolAlldatav4.csv") #full reservoir storage and temp dataset ge
 abbreviated=read.csv("GroupidExpectedVwVcTcTw.csv") #cleaned and analyzed/aggregated dataset for analysis 6 Sept
 
 #setwd("C:/Users/leadams/Desktop/ShastaDam/DP") #run analysis on VwVc to TcTw from this directory
-groupingcorrelation=lm(all$Groupid~all$month) #checking to see if i can run the analysis by group id
+#Un groupingcorrelation=lm(all$Groupid~all$month) #checking to see if i can run the analysis by group id
 #good correlation OK to group Vc and Vw by groupid
 #Residual standard error: 22.91 on 217 degrees of freedom
 #Multiple R-squared:  0.7583,	Adjusted R-squared:  0.7472 
@@ -171,7 +171,7 @@ groupingcorrelation=lm(all$Groupid~all$month) #checking to see if i can run the 
 
 #order by storage volume size, first of Vw then Vc - hopefully this is relatively monotonic
 OrderedVwVc=abbreviated[order(abbreviated$totalVw,-abbreviated$totalVc),] 
-d=OrderedVwVc 
+#Un d=OrderedVwVc 
 observedVc=all[,100] #raw Vc
 observedVw=all[,99] #raw Vw
 ObservedTc=all[,98] #raw reservoir Tc
@@ -222,8 +222,8 @@ AvailVw=seq(0,MaxQw+max(Vw),bin) #vc and Vw includes inflow and atm conditions
 
 MaxQc=max(MaxQcprep,MaxQcprep+max(AvailVcprep)-max(AvailVw)) #fall overturn creates situations in which more than maxQ enters
 
-AvailVc=seq(0,MaxQc+max(Vc),bin)
-AvailVw=seq(0,MaxQw+max(Vw),bin) #vc and Vw includes inflow and atm conditions
+#Un AvailVc=seq(0,MaxQc+max(Vc),bin)
+#Un AvailVw=seq(0,MaxQw+max(Vw),bin) #vc and Vw includes inflow and atm conditions
 
 #Voutoptions=Vdiscretizations(AvailVc,AvailVw)
 #Voutoptions=t(Vdiscretizations(AvailVc,AvailVw)[c(1:2),])
@@ -350,10 +350,10 @@ distance=302-rivermiles #distance from Shasta
 #########
 #approximated set of action choices
 Rdiscretizations=Vdiscretizations(Rc,Rw)
-Roptions=t(Vdiscretizations(Rc,Rw)[c(1:2),])
-colnames(Roptions)=c("Rc","Rw")
+#Un Roptions=t(Vdiscretizations(Rc,Rw)[c(1:2),])
+#Un colnames(Roptions)=c("Rc","Rw")
 #rownames(Rdiscretizations)=c("Rw","Rc","R")
-#decisoin space options (vector)
+#decision space options (vector)
 Rcdecs=Rdiscretizations[2,]#Vcstates
 Rwdecs=Rdiscretizations[1,]#"Vwstates
 Rdecs=Rcdecs+Rwdecs
@@ -367,7 +367,7 @@ allstages=array(0, dim=c(length(Vstates),length(Rdecs),length(ystates), NoofStag
 #dimnames(allstages)[[1]]=as.list(Vstates)
 #dimnames(allstages)[[2]]=as.list(Rdecs)
 #dimnames(allstages)[[3]]=as.list(ystates)
-stageslist=seq(1,NoofStages,1)
+#Un stageslist=seq(1,NoofStages,1)
 #dimnames(allstages)[[4]]=as.list(stageslist)
 
 #state space (matrix)
@@ -470,7 +470,7 @@ fstar[,S]=ifelse(apply(LastStage,1,max, na.rm=TRUE)<0, -9999, apply(LastStage,1,
 whichxstar[,S]=apply(LastStage,1,which.max) 
 Rcstar[,S]=ifelse(fstar[,S]<0, -9999, Rcdecs[whichxstar[,S]])
 Rwstar[,S]=ifelse(fstar[,S]<0, -9999, Rwdecs[whichxstar[,S]])
-Rstar=Rcstar+Rwstar
+#Un Rstar=Rcstar+Rwstar
  # }
 
 #####################
