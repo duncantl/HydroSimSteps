@@ -40,10 +40,10 @@ function(month, Q)
 
 
 QLookup = function(month, p) 
-    LookupyQ[ cbind2(as.character(month), as.character(p)) ]
+    LookupyQ[ as.character(month), as.character(p) ]
 
 TaLookup = function(month, p) 
-    LookupyTa[ cbind2(as.character(month), as.character(p)) ]
+    LookupyTa[ as.character(month), as.character(p) ]
 
 
 
@@ -159,28 +159,28 @@ ReleaseTemp =
   # xx = unique(with(as.data.frame(argInfo$choosesolveNums), paste(month, VW, VC, RC, RW, R, V, RcstarWinter, K, DP, p, sep = ",")))
   # VC & VW have same length.
   # 
-function(VC, VW, RC, RW)
+function(VC, VW, RC, RW, maxVc = max(Vc), maxVw = max(Vw))
 {
     Tc = rep(greaterTc, length(VC))
     # VW is a scalar at least in some calls.
     if(length(VW) == 1)
         VW = rep(VW, length(VC))
     
-    w = VC <= max(Vc)
+    w = VC <= maxVc
     if(any(w)) {
-        w2 = VW > max(Vw) # should we do this on VW[w] and do the subsetting differently.
+        w2 = VW > maxVw # should we do this on VW[w] and do the subsetting differently.
         w3 = w & w2
-        Tc[w3] = LookupTableTc[ cbind2(as.character(VC[w3]), rep(as.character(max(Vw)), sum(w3))) ]
+        Tc[w3] = LookupTableTc[ as.character(VC[w3]), as.character(maxVw) ]
         w3 = w & !w2
         Tc[ w3 ] = LookupTableTc[ cbind2(as.character(VC[w3]), as.character(VW[w3])) ]
     }
 
     Tw = rep(greaterTw, length(VW))
-    w = VW <= max(Vw)
+    w = VW <= maxVw
     if(any(w)) {
-        w2 = VC > max(Vc)
+        w2 = VC > maxVc
         w3 = w & w2
-        Tw[w3] = LookupTableTw[ cbind2(rep(as.character(max(Vc)), sum(w3)), as.character(VW[w3])) ]
+        Tw[w3] = LookupTableTw[ as.character(maxVc), as.character(VW[w3]) ]
         w3 = w & !w2
         Tw[ w3 ] = LookupTableTw[ cbind2(as.character(VC[w3]), as.character(VW[w3])) ]
     }    
